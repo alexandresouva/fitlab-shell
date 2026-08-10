@@ -30,6 +30,7 @@ Para que a comunicação seja 100% agnóstica a frameworks (Angular, React, Vue,
 ```
 
 ### Código de Inicialização na Shell (Vanilla JS puro)
+
 ```javascript
 // app.component.ts (Shell) - Executado uma única vez no bootstrap
 window.mfeContext = {
@@ -43,12 +44,15 @@ window.mfeContext = {
   // Grava o valor e despacha a atualização na engine de eventos do navegador
   setState(key, value) {
     this._state[key] = value;
-    window.dispatchEvent(new CustomEvent(`mfe:state:${key}`, { detail: value }));
+    window.dispatchEvent(
+      new CustomEvent(`mfe:state:${key}`, { detail: value })
+    );
   }
 };
 ```
 
 ### Exemplo de Inscrição e Limpeza (Consumo Agnóstico)
+
 ```javascript
 // 1. Obtém o estado inicial síncrono para renderização imediata
 const userProfile = window.mfeContext.getState('userProfile');
@@ -75,22 +79,28 @@ Embora a comunicação em tempo de execução seja feita por strings soltas do n
 ```typescript
 // @cookbook/contracts (Instalado nos MFEs)
 export interface MfeSharedState {
-  'userProfile': { name: string; email: string };
-  'userPermissions': string[];
-  'language': 'pt-BR' | 'en-US';
+  userProfile: { name: string; email: string };
+  userPermissions: string[];
+  language: 'pt-BR' | 'en-US';
 }
 
 export class MfeEventBus {
   // Emite evento tipado
-  static emit<K extends keyof MfeSharedState>(key: K, value: MfeSharedState[K]): void {
+  static emit<K extends keyof MfeSharedState>(
+    key: K,
+    value: MfeSharedState[K]
+  ): void {
     window.mfeContext.setState(key, value);
   }
 
   // Ouve evento com autocomplete e tipagem no editor de código
-  static listen<K extends keyof MfeSharedState>(key: K, callback: (value: MfeSharedState[K]) => void): () => void {
+  static listen<K extends keyof MfeSharedState>(
+    key: K,
+    callback: (value: MfeSharedState[K]) => void
+  ): () => void {
     const handler = (e: Event) => callback((e as CustomEvent).detail);
     window.addEventListener(`mfe:state:${key}`, handler);
-    
+
     // Retorna a função de unsubscribe diretamente
     return () => window.removeEventListener(`mfe:state:${key}`, handler);
   }
@@ -104,6 +114,7 @@ export class MfeEventBus {
 Caso o ecossistema venha a se tornar puramente Angular e os times queiram tirar proveito de operadores avançados de fluxo de dados (como `debounceTime`, `switchMap`, `filter`), mapeamos a alternativa de um Barramento baseado em RxJS.
 
 ### Código de Implementação
+
 ```typescript
 import { Subject, BehaviorSubject } from 'rxjs';
 
@@ -113,9 +124,10 @@ window.mfeRxjsBridge = {
   // Obtém ou inicializa um canal de dados dinâmico
   getChannel<T>(key: string, defaultValue?: T): Subject<T> {
     if (!this._subjects.has(key)) {
-      const subject = defaultValue !== undefined 
-        ? new BehaviorSubject<T>(defaultValue) 
-        : new Subject<T>();
+      const subject =
+        defaultValue !== undefined
+          ? new BehaviorSubject<T>(defaultValue)
+          : new Subject<T>();
       this._subjects.set(key, subject);
     }
     return this._subjects.get(key) as Subject<T>;
@@ -125,12 +137,12 @@ window.mfeRxjsBridge = {
 
 ### Comparação das Abordagens
 
-| Característica | Opção Híbrida (Eventos Nativos + Cache) | Opção RxJS Bridge |
-| :--- | :--- | :--- |
-| **Agnosticismo** | 100% Nativo (Funciona em Angular, React, Vue, HTML/Flask) | Restrito (Exige carregar a biblioteca RxJS em cada framework) |
-| **Performance** | Alta (Executado no compilador C++ do browser) | Média (Executado via loops JS da biblioteca RxJS) |
-| **Tamanho do Bundle** | Zero bytes extras | Adiciona peso de biblioteca em remotes não-Angular |
-| **Complexidade** | Simples (Baseado em funções normais da Web API) | Alta (Exige conhecimento de Reactive Programming e operadores) |
+| Característica        | Opção Híbrida (Eventos Nativos + Cache)                   | Opção RxJS Bridge                                              |
+| :-------------------- | :-------------------------------------------------------- | :------------------------------------------------------------- |
+| **Agnosticismo**      | 100% Nativo (Funciona em Angular, React, Vue, HTML/Flask) | Restrito (Exige carregar a biblioteca RxJS em cada framework)  |
+| **Performance**       | Alta (Executado no compilador C++ do browser)             | Média (Executado via loops JS da biblioteca RxJS)              |
+| **Tamanho do Bundle** | Zero bytes extras                                         | Adiciona peso de biblioteca em remotes não-Angular             |
+| **Complexidade**      | Simples (Baseado em funções normais da Web API)           | Alta (Exige conhecimento de Reactive Programming e operadores) |
 
 ---
 

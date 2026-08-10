@@ -55,6 +55,8 @@ Esta fase foca em construir o pacote de governança, regras de desenvolvimento b
 - **[Issue 1.3] Git Hooks & Husky Template:** Criação de scripts no pacote para instalar e padronizar o Husky e Commitlint em novos repositórios.
 - **[Issue 1.4] Regras de IA e Custom Skills do Agentic SDLC (Mapeamento de IA):** Definição e empacotamento dos assets de IA (`.cursorrules` focados em boundaries e `window.mfeContext`) e custom skills (`create-issue`, `implement-issue` e `submit-issue` adaptados para repositórios separados).
 - **[Issue 1.5] Schematic Angular de Geração Completa:** Desenvolvimento do schematic que gera o MFE Remote do zero e instala automaticamente o linting centralizado, git hooks locais, regras de IA, a esteira local de agentes e a estrutura de pastas feature-based.
+- **[Issue 1.6] Documentação Universal & Automação Completa via `init-all`:** Inclusão de templates de arquitetura (`docs/architecture.md`), testing guidelines, agentic SDLC e execução encadeada de governança (`init-all`).
+- **[Issue 1.7] Strict Linting, Karma Coverage Gates e Suite `TestHelper`:** Refinamento do ESLint para tipagem estrita (zero `any`), correção de sintaxe de boundaries, gates de cobertura de código (Statements, Branches, Functions, Lines) no Karma Headless e empacotamento da suite `TestHelper` (`queries`, `trigger`, `dispatch`) no `@fitlab/tooling/testing`.
 
 ---
 
@@ -93,44 +95,49 @@ Definição de limites estritos de comunicação e compartilhamento de contratos
 ---
 
 ### ⚙️ Fase 5: DevOps, IaC (Terraform) e Pipelines de CI/CD
+
 Entrega contínua e infraestrutura otimizada em um único ambiente.
-*   **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema sob um único ambiente unificado.
-*   **[Issue 5.2] Pipelines de CI/CD Estritas:** Criação de template de GitHub Actions para deploy dos remotes em subpastas do S3 sob o ambiente único, com trava lógica que usa o nome do repositório Git para garantir a unicidade de pasta.
-*   **[Issue 5.3] Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
+
+- **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema sob um único ambiente unificado.
+- **[Issue 5.2] Pipelines de CI/CD Estritas:** Criação de template de GitHub Actions para deploy dos remotes em subpastas do S3 sob o ambiente único, com trava lógica que usa o nome do repositório Git para garantir a unicidade de pasta.
+- **[Issue 5.3] Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
 
 ---
 
 ### 🔑 Fase 6: Autenticação, Permissionamento & Orquestração de Menu Dinâmico
+
 Segurança corporativa e orquestração do ecossistema guiada por dados.
-*   **[Issue 6.1] Autenticação e Propagação de Perfil:** Implementação na Shell do fluxo de login e exposição do perfil do usuário (`UserProfileDTO`) de forma reativa/síncrona via `window.mfeContext`.
-*   **[Issue 6.2] Diretivas de Acesso Reativas no Tooling:** Desenvolvimento de diretiva e utilitários de validação de permissões (ex: `*hasPermission`) empacotados no `@cookbook/mfe-tooling` para uso comum em todos os MFEs (inclusive na Shell).
-*   **[Issue 6.3] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` antes de renderizar a casca.
-*   **[Issue 6.4] Renderização Dinâmica e Filtro de Permissões na Sidebar:** Renderização condicional dos links na barra lateral comparando permissões exigidas no manifesto e permissões do usuário logado.
-*   **[Issue 6.5] Bloqueio e Guarda de Rotas para Status `inactive`:** Criação de Guard de Rota global (`MfeStatusGuard`) para impedir acessos diretos via URL a MFEs inativos, prevenindo downloads desnecessários de bundles.
-*   **[Issue 6.6] Lógica de Liberação Progressiva (Canary Deploy):** Mapeamento do status `canary` que permite a visualização e carregamento de MFEs experimentais apenas por usuários classificados no perfil como beta-testers.
-*   **[Issue 6.7] RFC/ADR do MFE Administrativo:** Elaboração do documento de especificação técnica para o futuro Remote administrativo que gerenciará o manifesto de rotas e permissões de forma visual.
+
+- **[Issue 6.1] Autenticação e Propagação de Perfil:** Implementação na Shell do fluxo de login e exposição do perfil do usuário (`UserProfileDTO`) de forma reativa/síncrona via `window.mfeContext`.
+- **[Issue 6.2] Diretivas de Acesso Reativas no Tooling:** Desenvolvimento de diretiva e utilitários de validação de permissões (ex: `*hasPermission`) empacotados no `@cookbook/mfe-tooling` para uso comum em todos os MFEs (inclusive na Shell).
+- **[Issue 6.3] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` antes de renderizar a casca.
+- **[Issue 6.4] Renderização Dinâmica e Filtro de Permissões na Sidebar:** Renderização condicional dos links na barra lateral comparando permissões exigidas no manifesto e permissões do usuário logado.
+- **[Issue 6.5] Bloqueio e Guarda de Rotas para Status `inactive`:** Criação de Guard de Rota global (`MfeStatusGuard`) para impedir acessos diretos via URL a MFEs inativos, prevenindo downloads desnecessários de bundles.
+- **[Issue 6.6] Lógica de Liberação Progressiva (Canary Deploy):** Mapeamento do status `canary` que permite a visualização e carregamento de MFEs experimentais apenas por usuários classificados no perfil como beta-testers.
+- **[Issue 6.7] RFC/ADR do MFE Administrativo:** Elaboração do documento de especificação técnica para o futuro Remote administrativo que gerenciará o manifesto de rotas e permissões de forma visual.
 
 ---
 
 ### 🚀 Fase 7: Áreas de Trabalho & Engine do Portal de MFEs
+
 Orquestração de áreas de trabalho personalizadas e funcionalidades comuns centralizadas.
-*   **[Issue 7.1] Mapeamento de Workspaces no Manifesto:** Redesenhar o esquema do `navigation.manifest.json` para suportar o agrupamento de `workspaces`, contendo suas próprias permissões e a lista de módulos (MFEs) associados a cada uma.
-*   **[Issue 7.2] Alternador de Áreas de Trabalho & Roteamento por Path Parameter:** Configurar o roteador da Shell para gerenciar o workspace ativo via parâmetro de caminho de rota (ex: `/:workspace-id`) com reload de contexto no chaveamento e switcher visual. *Nota: Decisão de usar ID ou Slug na URL está em aberto.*
-*   **[Issue 7.3] Resolução de Área de Trabalho Padrão (Default Workspace & Fallback):** Criar um Guard de redirecionamento (`DefaultWorkspaceRedirectGuard`) na Shell para lidar com acessos à rota raiz `/`, caindo no workspace preferido ou no fallback.
-*   **[Issue 7.4] Layout do MFE Wrapper & Carga Estática via Manifesto:** Implementação do `MfeWrapperComponent` exibindo instantaneamente o título da aplicação (`label`) e renderizando suas ações básicas a partir do JSON do manifesto, aplicando um skeleton loader no conteúdo enquanto o JS carrega em background.
-*   **[Issue 7.5] Barramento de Cliques do Header (Shell -> Remote):** Configuração de botões de ação no Header para disparar `CustomEvent` nativos que o remoto escuta localmente para reagir a cliques de forma isolada.
-*   **[Issue 7.6] Sistema de Favoritos de MFEs por Área de Trabalho:** Adicionar ícone de favoritar no Header e criar a lógica de persistência e renderização rápida na sidebar da Shell.
-*   **[Issue 7.7] Modais de Metadados e Avaliação de MFE (Feedback Loop):** Criação das modais de visualização de informações do MFE (Nome, Squad, Versão) e de avaliação de experiência de uso.
-*   **[Issue 7.8] Especificação de Gestão de Workspaces na RFC Admin:** Atualizar a especificação do MFE Administrativo para contemplar a interface visual de criação de workspaces, vinculando MFEs e associando permissões.
+
+- **[Issue 7.1] Mapeamento de Workspaces no Manifesto:** Redesenhar o esquema do `navigation.manifest.json` para suportar o agrupamento de `workspaces`, contendo suas próprias permissões e a lista de módulos (MFEs) associados a cada uma.
+- **[Issue 7.2] Alternador de Áreas de Trabalho & Roteamento por Path Parameter:** Configurar o roteador da Shell para gerenciar o workspace ativo via parâmetro de caminho de rota (ex: `/:workspace-id`) com reload de contexto no chaveamento e switcher visual. _Nota: Decisão de usar ID ou Slug na URL está em aberto._
+- **[Issue 7.3] Resolução de Área de Trabalho Padrão (Default Workspace & Fallback):** Criar um Guard de redirecionamento (`DefaultWorkspaceRedirectGuard`) na Shell para lidar com acessos à rota raiz `/`, caindo no workspace preferido ou no fallback.
+- **[Issue 7.4] Layout do MFE Wrapper & Carga Estática via Manifesto:** Implementação do `MfeWrapperComponent` exibindo instantaneamente o título da aplicação (`label`) e renderizando suas ações básicas a partir do JSON do manifesto, aplicando um skeleton loader no conteúdo enquanto o JS carrega em background.
+- **[Issue 7.5] Barramento de Cliques do Header (Shell -> Remote):** Configuração de botões de ação no Header para disparar `CustomEvent` nativos que o remoto escuta localmente para reagir a cliques de forma isolada.
+- **[Issue 7.6] Sistema de Favoritos de MFEs por Área de Trabalho:** Adicionar ícone de favoritar no Header e criar a lógica de persistência e renderização rápida na sidebar da Shell.
+- **[Issue 7.7] Modais de Metadados e Avaliação de MFE (Feedback Loop):** Criação das modais de visualização de informações do MFE (Nome, Squad, Versão) e de avaliação de experiência de uso.
+- **[Issue 7.8] Especificação de Gestão de Workspaces na RFC Admin:** Atualizar a especificação do MFE Administrativo para contemplar a interface visual de criação de workspaces, vinculando MFEs e associando permissões.
 
 ---
 
 ### 🧪 Fase 8: Documentação de Arquitetura & Diretrizes de Qualidade
+
 Capacitação técnica de equipes para criação, integração e qualidade consistente dentro do ecossistema de MFEs.
-*   **[Issue 8.1] Ajuste de Thresholds e Mocks no Schematic:** Configuração padrão de cobertura do Vitest em 85%-90% em novos remotes e templates para mocking de APIs com MSW.
-*   **[Issue 8.2] Playbook do Desenvolvedor - Scaffolding & Integração:** Escrita do guia de onboarding de criação de remotes e registro no manifesto central.
-*   **[Issue 8.3] Playbook de Comunicação & Roteamento:** Manual de integração por eventos nativos, cache e delegação de rotas por URL.
-*   **[Issue 8.4] Playbook de Qualidade & Testes:** Visão técnica das bibliotecas comuns (@cookbook/mfe-tooling e @cookbook/design-system) e recomendações de testes locais.
 
-
-
+- **[Issue 8.1] Ajuste de Thresholds e Mocks no Schematic:** Configuração padrão de cobertura do Vitest em 85%-90% em novos remotes e templates para mocking de APIs com MSW.
+- **[Issue 8.2] Playbook do Desenvolvedor - Scaffolding & Integração:** Escrita do guia de onboarding de criação de remotes e registro no manifesto central.
+- **[Issue 8.3] Playbook de Comunicação & Roteamento:** Manual de integração por eventos nativos, cache e delegação de rotas por URL.
+- **[Issue 8.4] Playbook de Qualidade & Testes:** Visão técnica das bibliotecas comuns (@cookbook/mfe-tooling e @cookbook/design-system) e recomendações de testes locais.
