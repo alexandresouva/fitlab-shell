@@ -1,0 +1,23 @@
+<div class="mfe-fallback-container">
+  <div class="mfe-fallback-card">
+    <div class="mfe-fallback-top-nav">
+      <a routerLink="/" class="btn-back-home">
+        &larr; Voltar para o In&iacute;cio
+      </a>
+    </div>
+
+    <div class="mfe-fallback-icon" aria-hidden="true">⚠️</div>
+    <h2>{{ moduleName }} Temporariamente Indispon&iacute;vel</h2>
+    <p>
+      N&atilde;o foi poss&iacute;vel carregar o m&oacute;dulo
+      <code>{{ moduleKey }}</code
+      >. O servi&ccedil;o pode estar em manuten&ccedil;&atilde;o ou desconectado
+      da rede.
+    </p>
+    <div class="mfe-fallback-actions">
+      <button type="button" class="btn-retry" (click)="retryModuleLoading()">
+        Tentar Novamente
+      </button>
+    </div>
+  </div>
+</div>

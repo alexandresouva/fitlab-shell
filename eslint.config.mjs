@@ -66,7 +66,7 @@ export default [
     }
   },
 
-  // 4. Shell Architecture Boundaries configuration (Host / Orchestrator)
+  // 4. Shell Architecture Boundaries configuration (ng-cookbook standard: core, shared, feature)
   {
     files: ['src/**/*.ts'],
     plugins: {
@@ -85,11 +85,9 @@ export default [
       },
       'boundaries/include': ['src/app/**/*.ts'],
       'boundaries/elements': [
-        { type: 'core-auth', pattern: 'src/app/core/auth' },
-        { type: 'core-theme', pattern: 'src/app/core/theme' },
-        { type: 'core-navigation', pattern: 'src/app/core/navigation' },
-        { type: 'core-layout', pattern: 'src/app/core/layout' },
-        { type: 'shared', pattern: 'src/app/shared' }
+        { type: 'core', pattern: 'src/app/core' },
+        { type: 'shared', pattern: 'src/app/shared' },
+        { type: 'feature', pattern: 'src/app/features' }
       ],
       'boundaries/ignore': [
         'src/main.ts',
@@ -106,33 +104,23 @@ export default [
         {
           default: 'disallow',
           policies: [
+            // 1. Core consome Shared
             {
-              from: { element: { type: 'core-auth' } },
+              from: { element: { type: 'core' } },
               allow: [{ to: { element: { type: 'shared' } } }]
             },
-            {
-              from: { element: { type: 'core-theme' } },
-              allow: [{ to: { element: { type: 'shared' } } }]
-            },
-            {
-              from: { element: { type: 'core-navigation' } },
-              allow: [
-                { to: { element: { type: 'core-auth' } } },
-                { to: { element: { type: 'shared' } } }
-              ]
-            },
-            {
-              from: { element: { type: 'core-layout' } },
-              allow: [
-                { to: { element: { type: 'core-auth' } } },
-                { to: { element: { type: 'core-theme' } } },
-                { to: { element: { type: 'core-navigation' } } },
-                { to: { element: { type: 'shared' } } }
-              ]
-            },
+            // 2. Shared é folha (não importa de ninguém)
             {
               from: { element: { type: 'shared' } },
               allow: []
+            },
+            // 3. Features consomem Core e Shared
+            {
+              from: { element: { type: 'feature' } },
+              allow: [
+                { to: { element: { type: 'core' } } },
+                { to: { element: { type: 'shared' } } }
+              ]
             }
           ]
         }

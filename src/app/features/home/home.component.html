@@ -1,0 +1,23 @@
+<div class="home-container">
+  <div class="home-hero">
+    <h2>Ecossistema FitLab</h2>
+    <p>
+      Selecione um dos módulos integrados para gerenciar treinos, nutrição e
+      performance.
+    </p>
+  </div>
+
+  <div class="modules-grid">
+    @for (module of mfeModules; track module.route) {
+      <a [routerLink]="module.route" class="module-card">
+        <div class="card-header">
+          <span class="card-icon" aria-hidden="true">{{ module.icon }}</span>
+          <span class="card-badge">{{ module.badge }}</span>
+        </div>
+        <h3>{{ module.title }}</h3>
+        <p>{{ module.description }}</p>
+        <span class="card-action">Acessar Módulo &rarr;</span>
+      </a>
+    }
+  </div>
+</div>
