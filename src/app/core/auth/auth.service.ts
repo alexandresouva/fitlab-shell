@@ -1,14 +1,6 @@
-import { Injectable, effect, signal } from '@angular/core';
-
-import { MfeContext } from '@fitlab/tooling';
+import { Injectable, signal } from '@angular/core';
 
 import { AuthUser } from './auth.models';
-
-declare global {
-  interface Window {
-    mfeContext?: MfeContext;
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -23,30 +15,7 @@ export class AuthService {
 
   readonly currentUser = signal<AuthUser>(this.defaultUser);
 
-  constructor() {
-    effect(() => {
-      const user = this.currentUser();
-      this.syncWithMfeContext(user);
-    });
-  }
-
   setUser(user: AuthUser): void {
     this.currentUser.set(user);
-  }
-
-  private syncWithMfeContext(user: AuthUser): void {
-    window.mfeContext = {
-      token: '',
-      permissions: [],
-      workspaceId: 'default',
-      locale: 'pt-BR',
-      theme: 'light',
-      ...(window.mfeContext ?? {}),
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email
-      }
-    };
   }
 }

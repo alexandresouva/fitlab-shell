@@ -7,26 +7,17 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    delete window.mfeContext;
     TestBed.configureTestingModule({});
     service = TestBed.inject(AuthService);
   });
 
-  afterEach(() => {
-    delete window.mfeContext;
-  });
-
-  it('should be created and have default authenticated user', () => {
+  it('should be created and have default user', () => {
     expect(service).toBeTruthy();
     expect(service.currentUser().name).toBe('Alexandre Souza');
+    expect(service.currentUser().email).toBe('alexandre@fitlab.dev');
   });
 
-  it('should sync user to window.mfeContext on initialization and change', () => {
-    TestBed.flushEffects();
-    expect(window.mfeContext?.user?.name).toBe('Alexandre Souza');
-    expect(window.mfeContext?.token).toBe('');
-    expect(window.mfeContext?.workspaceId).toBe('default');
-
+  it('should update current user when setUser is called', () => {
     const newUser: AuthUser = {
       id: 'usr_02',
       name: 'Maria Treinadora',
@@ -34,9 +25,7 @@ describe('AuthService', () => {
     };
 
     service.setUser(newUser);
-    TestBed.flushEffects();
-
     expect(service.currentUser().name).toBe('Maria Treinadora');
-    expect(window.mfeContext?.user?.name).toBe('Maria Treinadora');
+    expect(service.currentUser().id).toBe('usr_02');
   });
 });

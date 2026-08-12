@@ -16,30 +16,34 @@ export class ThemeService {
       const activeTheme = this.theme();
       this.applyThemeToDocument(activeTheme);
       this.saveThemeToStorage(activeTheme);
-      this.syncWithMfeContext(activeTheme);
     });
   }
 
   toggleTheme(): void {
-    this.theme.update((current) => (current === 'light' ? 'dark' : 'light'));
+    const nextTheme: AppTheme = this.theme() === 'light' ? 'dark' : 'light';
+    this.setTheme(nextTheme);
+  }
+
+  setTheme(newTheme: AppTheme): void {
+    this.theme.set(newTheme);
   }
 
   private getInitialTheme(): AppTheme {
-    const defaultTheme: AppTheme = 'light';
-
     try {
       const savedTheme = localStorage.getItem(this.storageKey) as AppTheme;
       if (savedTheme === 'light' || savedTheme === 'dark') {
         return savedTheme;
       }
-
-      if (window?.matchMedia('(prefers-color-scheme: dark)')?.matches) {
+      if (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      ) {
         return 'dark';
       }
     } catch {
-      return defaultTheme;
+      // Fallback for environments without localStorage
     }
-    return defaultTheme;
+    return 'light';
   }
 
   private applyThemeToDocument(theme: AppTheme): void {
@@ -56,20 +60,8 @@ export class ThemeService {
   private saveThemeToStorage(theme: AppTheme): void {
     try {
       localStorage.setItem(this.storageKey, theme);
-    } catch (error) {
-      console.error(
-        `[ThemeService] Não foi possível salvar o tema no localStorage:`,
-        error
-      );
+    } catch {
+      // Ignore storage errors in test / sandbox
     }
-  }
-
-  private syncWithMfeContext(theme: AppTheme): void {
-    if (!window.mfeContext) return;
-
-    window.mfeContext = {
-      ...window.mfeContext,
-      theme
-    };
   }
 }

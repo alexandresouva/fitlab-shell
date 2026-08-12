@@ -34,8 +34,16 @@ describe('ThemeService', () => {
     expect(service.theme()).toBe('light');
   });
 
-  it('should apply dark class and data-theme to documentElement when toggled to dark', () => {
-    service.toggleTheme();
+  it('should set theme directly with setTheme', () => {
+    service.setTheme('dark');
+    expect(service.theme()).toBe('dark');
+
+    service.setTheme('light');
+    expect(service.theme()).toBe('light');
+  });
+
+  it('should apply dark class and data-theme to documentElement when set to dark', () => {
+    service.setTheme('dark');
     TestBed.flushEffects();
 
     expect(document.documentElement.classList.contains('dark')).toBeTrue();
@@ -43,10 +51,10 @@ describe('ThemeService', () => {
     expect(localStorage.getItem('fitlab-theme')).toBe('dark');
   });
 
-  it('should remove dark class from documentElement when toggled back to light', () => {
-    service.toggleTheme();
+  it('should remove dark class from documentElement when set to light', () => {
+    service.setTheme('dark');
     TestBed.flushEffects();
-    service.toggleTheme();
+    service.setTheme('light');
     TestBed.flushEffects();
 
     expect(document.documentElement.classList.contains('dark')).toBeFalse();
@@ -80,22 +88,6 @@ describe('ThemeService', () => {
     expect(darkService.theme()).toBe('dark');
   });
 
-  it('should sync theme to window.mfeContext when mfeContext exists', () => {
-    window.mfeContext = {
-      token: '',
-      permissions: [],
-      workspaceId: 'default',
-      locale: 'pt-BR',
-      theme: 'light',
-      user: { id: '', name: '', email: '' }
-    };
-
-    service.toggleTheme();
-    TestBed.flushEffects();
-
-    expect(window.mfeContext.theme).toBe('dark');
-  });
-
   it('should handle localStorage.getItem error gracefully and fallback to default theme', () => {
     spyOn(localStorage, 'getItem').and.throwError('Storage error');
     TestBed.resetTestingModule();
@@ -105,9 +97,8 @@ describe('ThemeService', () => {
 
   it('should handle localStorage.setItem error gracefully', () => {
     spyOn(localStorage, 'setItem').and.throwError('Quota exceeded');
-    spyOn(console, 'error');
-    service.toggleTheme();
+    service.setTheme('dark');
     TestBed.flushEffects();
-    expect(console.error).toHaveBeenCalled();
+    expect(service.theme()).toBe('dark');
   });
 });
