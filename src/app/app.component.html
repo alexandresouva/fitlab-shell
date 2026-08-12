@@ -1,8 +1,23 @@
-<main class="shell-container">
-  <header class="shell-header">
-    <h1>{{ title }}</h1>
-  </header>
-  <section class="shell-content">
-    <router-outlet></router-outlet>
-  </section>
-</main>
+<div class="shell-layout">
+  <app-header
+    [isSidebarOpen]="isSidebarOpen()"
+    (toggleSidebar)="toggleSidebar()"
+  ></app-header>
+
+  <div class="shell-body">
+    <app-sidebar [isOpen]="isSidebarOpen()" (navigate)="closeSidebar()" />
+
+    @if (isSidebarOpen()) {
+      <button
+        type="button"
+        class="sidebar-backdrop"
+        (click)="closeSidebar()"
+        aria-label="Fechar menu de navegação"
+      ></button>
+    }
+
+    <main class="shell-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

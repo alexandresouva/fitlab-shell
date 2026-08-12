@@ -68,7 +68,8 @@ A Shell funciona como o orquestrador principal e casca do ecossistema. Por ser u
 - **[Issue 2.2] Configuração de Linting e Boundaries Locais:** Escrita manual do `eslint.config.mjs` da Shell com regras estritas de boundaries focadas na casca (separando `core/layout`, `core/auth`, `core/theme` e impedindo imports cruzados).
 - **[Issue 2.3] Setup do Native Federation na Shell (Host):** Integração do `@angular-architects/native-federation` como Host e mapeamento das dependências compartilhadas no `federation.config.js`.
 - **[Issue 2.4] Manifesto Dinâmico & Roteamento:** Configuração da carga do `federation.manifest.json` na inicialização e roteamento dinâmico para carregamento dos remotes em tempo de execução via `loadRemoteModule`.
-- **[Issue 2.5] Core Layout & Estado Reativo da Casca:** Desenvolvimento do layout estrutural (Header/Sidebar) e serviços reativos globais baseados em Signals (`AuthService` para compartilhar tokens e `ThemeService` para chaveamento de cores via CSS Variables).
+- **[Issue 2.5] Core Layout & Estado Reativo da Casca:** Desenvolvimento do layout estrutural (Header/Sidebar), design tokens globais com suporte a Dark Mode e serviços de domínio com Signals (`AuthService` e `ThemeService`).
+- **[Issue 2.6] Orquestrador de Contexto & Event Bus em Camadas:** Criação do Orquestrador Central `MfeContextService` na Shell e implementação no `@fitlab/tooling` do Event Bus universal em camadas (`SHELL_EVENTS`, `publishMfeEvent`, `listenMfeEvent` com função de cleanup) e do sugar adapter `useMfeSignal`, unificando snapshot síncrono e reatividade granular sem over-rendering.
 
 ---
 
@@ -88,7 +89,7 @@ O primeiro domínio de negócio operando 100% isolado, servindo de exemplo prát
 Definição de limites estritos de comunicação e compartilhamento de contratos entre os projetos.
 
 - **[Issue 4.1] Setup & Publicação do Design System (`@cookbook/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais, publicado como pacote NPM para consumo na Shell e nos Remotos.
-- **[Issue 4.2] Comunicação Agnóstica via Eventos Nativos e Cache (State Coordinator):** Implementação na Shell de controle de estado em memória com despacho de `CustomEvent` nativos, mantendo suporte de RxJS como opção alternativa documentada para análises futuras.
+- **[Issue 4.2] Comunicação Agnóstica em Camadas (Event Bus Universal & Sugar Adapters):** Implementação no `@fitlab/tooling` do Event Bus universal em camadas (`SHELL_EVENTS`, `MfeEventName = ShellEventName | (string & {})`, `publishMfeEvent`, `listenMfeEvent` com função de cleanup) acompanhado dos sugar syntax adapters (`useMfeSignal` para Angular Signals com `DestroyRef`, `useMfeEvent` para React e `useMfeRef` para Vue 3), combinando snapshot síncrono (0ms) e reatividade granular sem over-rendering.
 - **[Issue 4.3] Comunicação via Roteamento e Estado de URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (Wildcard Routing) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
 - **[Issue 4.4] Centralização de Contratos de API Universais (Zod DTOs):** Criação do sub-pacote `@cookbook/contracts` contendo esquemas Zod estritamente transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
 

@@ -1,0 +1,54 @@
+<header class="shell-header">
+  <div class="header-left">
+    <button
+      type="button"
+      class="btn-hamburger"
+      aria-label="Menu de Navegação"
+      [attr.aria-expanded]="isSidebarOpen()"
+      aria-controls="shell-sidebar"
+      (click)="onToggleSidebar()"
+    >
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <a routerLink="/" class="brand-link">
+      <span class="brand-icon" aria-hidden="true">🏋️‍♂️</span>
+      <h1 class="brand-title">FitLab</h1>
+      <span class="brand-badge">Shell</span>
+    </a>
+  </div>
+
+  <div class="header-right">
+    <button
+      type="button"
+      class="btn-theme-toggle"
+      [attr.aria-label]="
+        themeService.theme() === 'dark'
+          ? 'Ativar Tema Claro'
+          : 'Ativar Tema Escuro'
+      "
+      (click)="onToggleTheme()"
+    >
+      @if (themeService.theme() === 'dark') {
+        <span aria-hidden="true">☀️</span>
+      } @else {
+        <span aria-hidden="true">🌙</span>
+      }
+    </button>
+
+    <div class="user-profile">
+      @if (authService.currentUser().avatarUrl; as avatar) {
+        <img
+          [src]="avatar"
+          [alt]="authService.currentUser().name"
+          class="user-avatar"
+          width="32"
+          height="32"
+        />
+      }
+      <span class="user-name">{{ authService.currentUser().name }}</span>
+    </div>
+  </div>
+</header>

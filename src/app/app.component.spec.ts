@@ -22,12 +22,40 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it(`should have the 'FitLab Shell' title`, () => {
-    expect(component.title).toEqual('FitLab Shell');
+  it('should toggle sidebar state', () => {
+    expect(component.isSidebarOpen()).toBeFalse();
+
+    component.toggleSidebar();
+    expect(component.isSidebarOpen()).toBeTrue();
+
+    component.toggleSidebar();
+    expect(component.isSidebarOpen()).toBeFalse();
   });
 
-  it('should render title in a h1 tag', () => {
+  it('should close sidebar when closeSidebar is called', () => {
+    component.toggleSidebar();
+    expect(component.isSidebarOpen()).toBeTrue();
+
+    component.closeSidebar();
+    expect(component.isSidebarOpen()).toBeFalse();
+  });
+
+  it('should render header and sidebar in template', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('FitLab Shell');
+    expect(compiled.querySelector('app-header')).toBeTruthy();
+    expect(compiled.querySelector('app-sidebar')).toBeTruthy();
+    expect(compiled.querySelector('router-outlet')).toBeTruthy();
+  });
+
+  it('should render backdrop when sidebar is open', () => {
+    component.toggleSidebar();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const backdrop = compiled.querySelector('.sidebar-backdrop') as HTMLElement;
+    expect(backdrop).toBeTruthy();
+
+    backdrop.click();
+    expect(component.isSidebarOpen()).toBeFalse();
   });
 });
