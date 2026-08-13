@@ -77,7 +77,7 @@ A Shell funciona como o orquestrador principal e casca do ecossistema. Por ser u
 
 O primeiro domínio de negócio operando 100% isolado, servindo de exemplo prático de implementação.
 
-- **[Issue 3.1] Scaffold & Bootstrapping do Remote (`mfe-[nome]`):** Criação do repositório Git separado e execução do schematic `@cookbook/mfe-tooling:remote` para estruturar a aplicação na porta `4201`, herdando toda a governança e padrões de qualidade.
+- **[Issue 3.1] Scaffold & Bootstrapping do Remote (`mfe-[nome]`):** Criação do repositório Git separado e execução do schematic `@fitlab/tooling:mfe-remote` para estruturar a aplicação na porta `4201`, herdando toda a governança e padrões de qualidade.
 - **[Issue 3.2] Configuração do Native Federation & Exposição do Módulo:** Ajuste do `federation.config.js` do Remote declarando a exposição das rotas do negócio (ex: `./remote-routes`) e o compartilhamento flexível de dependências.
 - **[Issue 3.3] Execução Autônoma Local:** Configuração do Remote para rodar de forma independente na porta `4201` via `ng serve`, permitindo o desenvolvimento isolado de layouts e lógica de tela.
 - **[Issue 3.4] Arquitetura de Negócio Local (Feature do MFE):** Desenvolvimento do fluxo de negócio seguindo o padrão modular do `ng-cookbook` (domain, data-access com DTOs Zod/Mappers, application com Signal Store/Facade e páginas).
@@ -88,10 +88,11 @@ O primeiro domínio de negócio operando 100% isolado, servindo de exemplo prát
 
 Definição de limites estritos de comunicação e compartilhamento de contratos entre os projetos.
 
-- **[Issue 4.1] Setup & Publicação do Design System (`@cookbook/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais, publicado como pacote NPM para consumo na Shell e nos Remotos.
-- **[Issue 4.2] Comunicação Agnóstica em Camadas (Event Bus Universal & Sugar Adapters):** Implementação no `@fitlab/tooling` do Event Bus universal em camadas (`SHELL_EVENTS`, `MfeEventName = ShellEventName | (string & {})`, `publishMfeEvent`, `listenMfeEvent` com função de cleanup) acompanhado dos sugar syntax adapters (`useMfeSignal` para Angular Signals com `DestroyRef`, `useMfeEvent` para React e `useMfeRef` para Vue 3), combinando snapshot síncrono (0ms) e reatividade granular sem over-rendering.
+- **[Issue 4.1] Setup & Publicação do Design System (`@fitlab/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais, publicado como pacote NPM para consumo na Shell e nos Remotos.
+  - **[TODO Arquitetural]**: Migrar a folha canônica de design tokens `tokens.css` (hospedada provisoriamente no `@fitlab/tooling` durante a Fase 3) para o pacote `@fitlab/design-system`, atualizando os templates de schematics e imports nos remotes e shell para `@fitlab/design-system/tokens.css`.
+- **[Issue 4.2] Adapters Reativos Multi-Framework (React & Vue Sugar Syntax):** Extensão do `@fitlab/tooling` com sub-entrypoints dedicados (`@fitlab/tooling/react` e `@fitlab/tooling/vue`), implementando os hooks idiomáticos `useMfeEvent` (React 18 com `useState`/`useEffect`) e `useMfeRef` (Vue 3 com `ref`/`onUnmounted`) para consumo nos remotes MFE Timer e MFE Nutrition.
 - **[Issue 4.3] Comunicação via Roteamento e Estado de URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (Wildcard Routing) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
-- **[Issue 4.4] Centralização de Contratos de API Universais (Zod DTOs):** Criação do sub-pacote `@cookbook/contracts` contendo esquemas Zod estritamente transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
+- **[Issue 4.4] Centralização de Contratos de API Universais (Zod DTOs):** Criação do sub-pacote `@fitlab/contracts` contendo esquemas Zod estritamente transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
 
 ---
 
@@ -110,7 +111,7 @@ Entrega contínua e infraestrutura otimizada em um único ambiente.
 Segurança corporativa e orquestração do ecossistema guiada por dados.
 
 - **[Issue 6.1] Autenticação e Propagação de Perfil:** Implementação na Shell do fluxo de login e exposição do perfil do usuário (`UserProfileDTO`) de forma reativa/síncrona via `window.mfeContext`.
-- **[Issue 6.2] Diretivas de Acesso Reativas no Tooling:** Desenvolvimento de diretiva e utilitários de validação de permissões (ex: `*hasPermission`) empacotados no `@cookbook/mfe-tooling` para uso comum em todos os MFEs (inclusive na Shell).
+- **[Issue 6.2] Diretivas de Acesso Reativas no Tooling:** Desenvolvimento de diretiva e utilitários de validação de permissões (ex: `*hasPermission`) empacotados no `@fitlab/tooling` para uso comum em todos os MFEs (inclusive na Shell).
 - **[Issue 6.3] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` antes de renderizar a casca.
 - **[Issue 6.4] Renderização Dinâmica e Filtro de Permissões na Sidebar:** Renderização condicional dos links na barra lateral comparando permissões exigidas no manifesto e permissões do usuário logado.
 - **[Issue 6.5] Bloqueio e Guarda de Rotas para Status `inactive`:** Criação de Guard de Rota global (`MfeStatusGuard`) para impedir acessos diretos via URL a MFEs inativos, prevenindo downloads desnecessários de bundles.
@@ -141,4 +142,4 @@ Capacitação técnica de equipes para criação, integração e qualidade consi
 - **[Issue 8.1] Ajuste de Thresholds e Mocks no Schematic:** Configuração padrão de cobertura do Vitest em 85%-90% em novos remotes e templates para mocking de APIs com MSW.
 - **[Issue 8.2] Playbook do Desenvolvedor - Scaffolding & Integração:** Escrita do guia de onboarding de criação de remotes e registro no manifesto central.
 - **[Issue 8.3] Playbook de Comunicação & Roteamento:** Manual de integração por eventos nativos, cache e delegação de rotas por URL.
-- **[Issue 8.4] Playbook de Qualidade & Testes:** Visão técnica das bibliotecas comuns (@cookbook/mfe-tooling e @cookbook/design-system) e recomendações de testes locais.
+- **[Issue 8.4] Playbook de Qualidade & Testes:** Visão técnica das bibliotecas comuns (@fitlab/tooling e @fitlab/design-system) e recomendações de testes locais.
