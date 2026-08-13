@@ -32,48 +32,32 @@ export class MfeContextService {
       permissions: [],
       workspaceId: 'default',
       locale: 'pt-BR',
-      ...(window.mfeContext ?? {}),
       theme,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email
-      }
+      user
     };
   }
 
   private bindDomainReactivity(): void {
     effect(() => {
       const theme = this.themeService.theme();
-      if (!window.mfeContext) return;
-      if (window.mfeContext.theme !== theme) {
-        window.mfeContext = {
-          ...window.mfeContext,
-          theme
-        };
-        publishMfeEvent(SHELL_EVENTS.THEME_CHANGED, theme);
-      }
+      if (!window.mfeContext || window.mfeContext.theme === theme) return;
+
+      window.mfeContext = {
+        ...window.mfeContext,
+        theme
+      };
+      publishMfeEvent(SHELL_EVENTS.THEME_CHANGED, theme);
     });
 
     effect(() => {
       const user = this.authService.currentUser();
-      if (!window.mfeContext) return;
-      if (
-        window.mfeContext.user.id !== user.id ||
-        window.mfeContext.user.name !== user.name ||
-        window.mfeContext.user.email !== user.email
-      ) {
-        const formattedUser = {
-          id: user.id,
-          name: user.name,
-          email: user.email
-        };
-        window.mfeContext = {
-          ...window.mfeContext,
-          user: formattedUser
-        };
-        publishMfeEvent(SHELL_EVENTS.USER_CHANGED, formattedUser);
-      }
+      if (!window.mfeContext || window.mfeContext.user.id === user.id) return;
+
+      window.mfeContext = {
+        ...window.mfeContext,
+        user
+      };
+      publishMfeEvent(SHELL_EVENTS.USER_CHANGED, user);
     });
   }
 }
