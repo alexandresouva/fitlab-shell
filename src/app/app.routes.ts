@@ -17,28 +17,28 @@ export const routes: Routes = [
   createMfeRoute({
     path: 'workouts',
     remoteName: 'mfe-workout-planner',
-    exposedModule: './remote-routes',
+    exposedModule: './routes',
     moduleName: 'Planejador de Treinos',
     fallbackComponent: MfeErrorFallbackComponent
   }),
   createMfeRoute({
     path: 'nutrition',
     remoteName: 'mfe-nutrition',
-    exposedModule: './remote-routes',
+    exposedModule: './routes',
     moduleName: 'Nutrição & Dietas',
     fallbackComponent: MfeErrorFallbackComponent
   }),
   createMfeRoute({
     path: 'timer',
     remoteName: 'mfe-interval-timer',
-    exposedModule: './remote-routes',
+    exposedModule: './routes',
     moduleName: 'Timer de Intervalos',
     fallbackComponent: MfeErrorFallbackComponent
   }),
   createMfeRoute({
     path: 'card-generator',
     remoteName: 'mfe-card-generator',
-    exposedModule: './remote-routes',
+    exposedModule: './routes',
     moduleName: 'Gerador de Fichas',
     fallbackComponent: MfeErrorFallbackComponent
   }),
