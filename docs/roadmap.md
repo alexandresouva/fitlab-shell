@@ -2,9 +2,9 @@
 
 Este documento serve como guia prático e roadmap de arquitetura para a construção de um ecossistema de **Micro Frontends (MFE)** baseado em repositórios separados (Multirepo), utilizando **Native Federation** e mantendo a qualidade técnica definida no `ng-cookbook`.
 
-Para ver o tema de negócio oficial do projeto e como cada tecnologia é integrada, acesse o documento [project-theme.md](file:///Users/alexandre/Desktop/playground/mfe-cookbook/docs/project-theme.md).
+Para ver o tema de negócio oficial do projeto e como cada tecnologia é integrada, acesse o documento [project-theme.md](file:///Users/alexandre/Desktop/playground/fitlab/fitlab-shell/docs/project-theme.md).
 
-O projeto visa simular o padrão corporativo de mercado utilizando três divisões principais de repositórios.
+O projeto visa simular o padrão corporativo de mercado utilizando divisões principais de repositórios integrados de forma gradual.
 
 ---
 
@@ -21,16 +21,18 @@ graph TD
         F2[Fase 2: Estrutura Host & Roteamento Dinâmico]
     end
 
-    subgraph Repo: mfe-[nome]
-        F3[Fase 3: Desenvolvimento do MFE Remote]
+    subgraph Repo: mfe-workout-planner
+        F3[Fase 3: Execução Autônoma do MFE]
     end
 
     subgraph Ecossistema Integrado
-        F4[Fase 4: Compartilhamento de Código & Comunicação]
-        F5[Fase 5: DevOps, IaC & Pipelines de CI/CD]
-        F6[Fase 6: Autenticação, Permissionamento & Menu Dinâmico]
-        F7[Fase 7: Áreas de Trabalho & Engine do Portal]
-        F8[Fase 8: Documentação de Arquitetura & Diretrizes de Qualidade]
+        F4[Fase 4: Compartilhamento de Código & Contratos]
+        F5[Fase 5: DevOps, Primeiro Deploy & Workout Planner Feature]
+        F6[Fase 6: Shell Dinâmica, Segurança & Canary]
+        F7[Fase 7: Integração Gradual - MFE Interval Timer React]
+        F8[Fase 8: Integração Gradual - MFE Nutrition Vue & Workspaces]
+        F9[Fase 9: Integração Gradual - MFE Card Gen Flask & MFE Admin]
+        F10[Fase 10: Playbooks de Governança & Qualidade]
     end
 
     F1 --> F2
@@ -40,106 +42,107 @@ graph TD
     F5 --> F6
     F6 --> F7
     F7 --> F8
+    F8 --> F9
+    F9 --> F10
 ```
 
 ---
 
 ## 📅 Detalhamento das Fases
 
-### 🟢 Fase 1: Governança, Automação & Scaffolding (A criação do `@cookbook/mfe-tooling`)
+### 🟢 Fase 1: Governança, Automação & Scaffolding
+*Status: **CONCLUÍDO***
 
-Esta fase foca em construir o pacote de governança, regras de desenvolvimento baseadas em IA e geradores automáticos de projetos.
-
-- **[Issue 1.1] Setup Inicial do Pacote `@cookbook/mfe-tooling`:** Criação do repositório dedicado para o pacote NPM de ferramentas.
-- **[Issue 1.2] Configuração de Linting para Remotos (`@cookbook/eslint-config`):** Centralização das regras de qualidade (ESLint Flat Config + Prettier) otimizadas para Micro Frontends Remotos. A Shell terá suas regras de boundaries escritas localmente por ser uma aplicação única.
-- **[Issue 1.3] Git Hooks & Husky Template:** Criação de scripts no pacote para instalar e padronizar o Husky e Commitlint em novos repositórios.
-- **[Issue 1.4] Regras de IA e Custom Skills do Agentic SDLC (Mapeamento de IA):** Definição e empacotamento dos assets de IA (`.cursorrules` focados em boundaries e `window.mfeContext`) e custom skills (`create-issue`, `implement-issue` e `submit-issue` adaptados para repositórios separados).
-- **[Issue 1.5] Schematic Angular de Geração Completa:** Desenvolvimento do schematic que gera o MFE Remote do zero e instala automaticamente o linting centralizado, git hooks locais, regras de IA, a esteira local de agentes e a estrutura de pastas feature-based.
-- **[Issue 1.6] Documentação Universal & Automação Completa via `init-all`:** Inclusão de templates de arquitetura (`docs/architecture.md`), testing guidelines, agentic SDLC e execução encadeada de governança (`init-all`).
-- **[Issue 1.7] Strict Linting, Karma Coverage Gates e Suite `TestHelper`:** Refinamento do ESLint para tipagem estrita (zero `any`), correção de sintaxe de boundaries, gates de cobertura de código (Statements, Branches, Functions, Lines) no Karma Headless e empacotamento da suite `TestHelper` (`queries`, `trigger`, `dispatch`) no `@fitlab/tooling/testing`.
+- [x] **[Issue 1.1] Setup Inicial do Pacote `@fitlab/tooling`:** Criação do repositório dedicado para o pacote NPM de ferramentas.
+- [x] **[Issue 1.2] Configuração de Linting para Remotos:** Centralização das regras de qualidade (ESLint Flat Config + Prettier) no pacote de tooling.
+- [x] **[Issue 1.3] Git Hooks & Husky Template:** Instalar e padronizar o Husky e Commitlint locais.
+- [x] **[Issue 1.4] Regras de IA e Custom Skills:** Definição e empacotamento das custom skills (`create-issue`, `implement-issue` e `submit-issue`) adaptados para repositórios separados.
+- [x] **[Issue 1.5] Schematic Angular de Geração Completa:** Desenvolvimento do schematic que gera o MFE Remote do zero e instala automaticamente as dependências comuns de governança.
+- [x] **[Issue 1.6] Documentação Universal & Automação Completa via `init-all`:** Inclusão de templates de arquitetura e execução encadeada de governança.
+- [x] **[Issue 1.7] Strict Linting, Karma Coverage Gates e Suite `TestHelper`:** Refinamento do ESLint para tipagem estrita, gates de cobertura de código no Karma Headless e empacotamento da suite de testes comuns.
 
 ---
 
 ### 🚀 Fase 2: Configuração da Shell (Host App)
+*Status: **CONCLUÍDO***
 
-A Shell funciona como o orquestrador principal e casca do ecossistema. Por ser um repositório único, suas configurações são diretas e locais.
-
-- **[Issue 2.1] Scaffold Inicial do Repositório `mfe-shell`:** Inicialização da aplicação Angular utilizando o compilador padrão `esbuild` e setup local de Git, Husky, Commitlint e Prettier.
-- **[Issue 2.2] Configuração de Linting e Boundaries Locais:** Escrita manual do `eslint.config.mjs` da Shell com regras estritas de boundaries focadas na casca (separando `core/layout`, `core/auth`, `core/theme` e impedindo imports cruzados).
-- **[Issue 2.3] Setup do Native Federation na Shell (Host):** Integração do `@angular-architects/native-federation` como Host e mapeamento das dependências compartilhadas no `federation.config.js`.
-- **[Issue 2.4] Manifesto Dinâmico & Roteamento:** Configuração da carga do `federation.manifest.json` na inicialização e roteamento dinâmico para carregamento dos remotes em tempo de execução via `loadRemoteModule`.
-- **[Issue 2.5] Core Layout & Estado Reativo da Casca:** Desenvolvimento do layout estrutural (Header/Sidebar), design tokens globais com suporte a Dark Mode e serviços de domínio com Signals (`AuthService` e `ThemeService`).
-- **[Issue 2.6] Orquestrador de Contexto & Event Bus em Camadas:** Criação do Orquestrador Central `MfeContextService` na Shell e implementação no `@fitlab/tooling` do Event Bus universal em camadas (`SHELL_EVENTS`, `publishMfeEvent`, `listenMfeEvent` com função de cleanup) e do sugar adapter `useMfeSignal`, unificando snapshot síncrono e reatividade granular sem over-rendering.
-
----
-
-### 📦 Fase 3: Configuração de um MFE Remote (Tema em Aberto)
-
-O primeiro domínio de negócio operando 100% isolado, servindo de exemplo prático de implementação.
-
-- **[Issue 3.1] Scaffold & Bootstrapping do Remote (`mfe-[nome]`):** Criação do repositório Git separado e execução do schematic `@fitlab/tooling:mfe-remote` para estruturar a aplicação na porta `4201`, herdando toda a governança e padrões de qualidade.
-- **[Issue 3.2] Configuração do Native Federation & Exposição do Módulo:** Ajuste do `federation.config.js` do Remote declarando a exposição das rotas do negócio (ex: `./remote-routes`) e o compartilhamento flexível de dependências.
-- **[Issue 3.3] Execução Autônoma Local:** Configuração do Remote para rodar de forma independente na porta `4201` via `ng serve`, permitindo o desenvolvimento isolado de layouts e lógica de tela.
-- **[Issue 3.4] Arquitetura de Negócio Local (Feature do MFE):** Desenvolvimento do fluxo de negócio seguindo o padrão modular do `ng-cookbook` (domain, data-access com DTOs Zod/Mappers, application com Signal Store/Facade e páginas).
+- [x] **[Issue 2.1] Scaffold Inicial do Repositório `fitlab-shell`:** Inicialização da aplicação Angular utilizando o compilador padrão `esbuild`.
+- [x] **[Issue 2.2] Configuração de Linting e Boundaries Locais:** Escrita manual do `eslint.config.mjs` da Shell com regras estritas de boundaries.
+- [x] **[Issue 2.3] Setup do Native Federation na Shell (Host):** Integração do `@angular-architects/native-federation` como Host.
+- [x] **[Issue 2.4] Manifesto Dinâmico & Roteamento:** Configuração da carga do `federation.manifest.json` na inicialização e roteamento dinâmico.
+- [x] **[Issue 2.5] Core Layout & Estado Reativo da Casca:** Desenvolvimento do layout estrutural (Header/Sidebar) com suporte a Dark Mode e serviços de domínio com Signals.
+- [x] **[Issue 2.6] Orquestrador de Contexto & Event Bus em Camadas:** Criação do `MfeContextService` na Shell, Event Bus universal no tooling e sugar adapter `useMfeSignal`.
 
 ---
 
-### 🔴 Fase 4: Compartilhamento de Código & Comunicação entre MFEs
+### 📦 Fase 3: Configuração do MFE Remote (Workout Planner)
+*Status: **CONCLUÍDO***
 
-Definição de limites estritos de comunicação e compartilhamento de contratos entre os projetos.
-
-- **[Issue 4.1] Setup & Publicação do Design System (`@fitlab/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais, publicado como pacote NPM para consumo na Shell e nos Remotos.
-  - **[TODO Arquitetural]**: Migrar a folha canônica de design tokens `tokens.css` (hospedada provisoriamente no `@fitlab/tooling` durante a Fase 3) para o pacote `@fitlab/design-system`, atualizando os templates de schematics e imports nos remotes e shell para `@fitlab/design-system/tokens.css`.
-- **[Issue 4.2] Adapters Reativos Multi-Framework (React & Vue Sugar Syntax):** Extensão do `@fitlab/tooling` com sub-entrypoints dedicados (`@fitlab/tooling/react` e `@fitlab/tooling/vue`), implementando os hooks idiomáticos `useMfeEvent` (React 18 com `useState`/`useEffect`) e `useMfeRef` (Vue 3 com `ref`/`onUnmounted`) para consumo nos remotes MFE Timer e MFE Nutrition.
-- **[Issue 4.3] Comunicação via Roteamento e Estado de URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (Wildcard Routing) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
-- **[Issue 4.4] Centralização de Contratos de API Universais (Zod DTOs):** Criação do sub-pacote `@fitlab/contracts` contendo esquemas Zod estritamente transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
+- [x] **[Issue 3.1] Scaffold & Bootstrapping do Remote:** Execução do schematic `@fitlab/tooling:mfe-remote` para estruturar a aplicação na porta `4201`.
+- [x] **[Issue 3.2] Configuração do Native Federation & Exposição do Módulo:** Ajuste do `federation.config.js` do Remote declarando a exposição das rotas do negócio (`./routes`).
+- [x] **[Issue 3.3] Execução Autônoma Local:** Configuração do Remote para rodar de forma independente e integrada via dev-server local sem conflito de portas ou erros de injeção contextuais.
 
 ---
 
-### ⚙️ Fase 5: DevOps, IaC (Terraform) e Pipelines de CI/CD
+### 🔴 Fase 4: Compartilhamento de Código & Contratos (Foco nas Libs)
+Definição de limites estritos de comunicação e compartilhamento de contratos entre os projetos antes de mover para produção:
 
-Entrega contínua e infraestrutura otimizada em um único ambiente.
-
-- **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema sob um único ambiente unificado.
-- **[Issue 5.2] Pipelines de CI/CD Estritas:** Criação de template de GitHub Actions para deploy dos remotes em subpastas do S3 sob o ambiente único, com trava lógica que usa o nome do repositório Git para garantir a unicidade de pasta.
-- **[Issue 5.3] Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
-
----
-
-### 🔑 Fase 6: Autenticação, Permissionamento & Orquestração de Menu Dinâmico
-
-Segurança corporativa e orquestração do ecossistema guiada por dados.
-
-- **[Issue 6.1] Autenticação e Propagação de Perfil:** Implementação na Shell do fluxo de login e exposição do perfil do usuário (`UserProfileDTO`) de forma reativa/síncrona via `window.mfeContext`.
-- **[Issue 6.2] Diretivas de Acesso Reativas no Tooling:** Desenvolvimento de diretiva e utilitários de validação de permissões (ex: `*hasPermission`) empacotados no `@fitlab/tooling` para uso comum em todos os MFEs (inclusive na Shell).
-- **[Issue 6.3] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` antes de renderizar a casca.
-- **[Issue 6.4] Renderização Dinâmica e Filtro de Permissões na Sidebar:** Renderização condicional dos links na barra lateral comparando permissões exigidas no manifesto e permissões do usuário logado.
-- **[Issue 6.5] Bloqueio e Guarda de Rotas para Status `inactive`:** Criação de Guard de Rota global (`MfeStatusGuard`) para impedir acessos diretos via URL a MFEs inativos, prevenindo downloads desnecessários de bundles.
-- **[Issue 6.6] Lógica de Liberação Progressiva (Canary Deploy):** Mapeamento do status `canary` que permite a visualização e carregamento de MFEs experimentais apenas por usuários classificados no perfil como beta-testers.
-- **[Issue 6.7] RFC/ADR do MFE Administrativo:** Elaboração do documento de especificação técnica para o futuro Remote administrativo que gerenciará o manifesto de rotas e permissões de forma visual.
+- [ ] **[Issue 4.1] Setup & Publicação do Design System (`@fitlab/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais de tema (tokens) compartilhadas.
+- [ ] **[Issue 4.2] Comunicação Reativa Universal (`@fitlab/tooling`):** Extensão do tooling com os hooks idiomáticos de React (`useMfeEvent`) e Vue (`useMfeRef`) prontos para o consumo futuro dos próximos MFEs.
+- [ ] **[Issue 4.3] Comunicação via Roteamento e URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (*Wildcard Routing*) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
+- [ ] **[Issue 4.4] Centralização de Contratos de API Universais (`@fitlab/contracts`):** Sub-pacote contendo esquemas Zod transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
 
 ---
 
-### 🚀 Fase 7: Áreas de Trabalho & Engine do Portal de MFEs
+### ⚙️ Fase 5: Infraestrutura de CDN, Primeiro Deploy & Workout Planner Feature
+Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo de negócio do primeiro MFE:
 
-Orquestração de áreas de trabalho personalizadas e funcionalidades comuns centralizadas.
-
-- **[Issue 7.1] Mapeamento de Workspaces no Manifesto:** Redesenhar o esquema do `navigation.manifest.json` para suportar o agrupamento de `workspaces`, contendo suas próprias permissões e a lista de módulos (MFEs) associados a cada uma.
-- **[Issue 7.2] Alternador de Áreas de Trabalho & Roteamento por Path Parameter:** Configurar o roteador da Shell para gerenciar o workspace ativo via parâmetro de caminho de rota (ex: `/:workspace-id`) com reload de contexto no chaveamento e switcher visual. _Nota: Decisão de usar ID ou Slug na URL está em aberto._
-- **[Issue 7.3] Resolução de Área de Trabalho Padrão (Default Workspace & Fallback):** Criar um Guard de redirecionamento (`DefaultWorkspaceRedirectGuard`) na Shell para lidar com acessos à rota raiz `/`, caindo no workspace preferido ou no fallback.
-- **[Issue 7.4] Layout do MFE Wrapper & Carga Estática via Manifesto:** Implementação do `MfeWrapperComponent` exibindo instantaneamente o título da aplicação (`label`) e renderizando suas ações básicas a partir do JSON do manifesto, aplicando um skeleton loader no conteúdo enquanto o JS carrega em background.
-- **[Issue 7.5] Barramento de Cliques do Header (Shell -> Remote):** Configuração de botões de ação no Header para disparar `CustomEvent` nativos que o remoto escuta localmente para reagir a cliques de forma isolada.
-- **[Issue 7.6] Sistema de Favoritos de MFEs por Área de Trabalho:** Adicionar ícone de favoritar no Header e criar a lógica de persistência e renderização rápida na sidebar da Shell.
-- **[Issue 7.7] Modais de Metadados e Avaliação de MFE (Feedback Loop):** Criação das modais de visualização de informações do MFE (Nome, Squad, Versão) e de avaliação de experiência de uso.
-- **[Issue 7.8] Especificação de Gestão de Workspaces na RFC Admin:** Atualizar a especificação do MFE Administrativo para contemplar a interface visual de criação de workspaces, vinculando MFEs e associando permissões.
+- [ ] **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema.
+- [ ] **[Issue 5.2] Pipelines de CI/CD da Shell e Workout Planner (Casca):** Template de GitHub Actions para deploy automático da Shell, do Design System, do Tooling e da casca de aviso do Workout Planner no S3.
+- [ ] **[Issue 5.3] Script de Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
+- [ ] **[Issue 5.4] Arquitetura de Negócio Local (Finalização do Workout Planner):** Desenvolvimento do fluxo de negócio de montagem de exercícios seguindo o padrão modular (domain, mappers, Signal Store/Facade), testando a promoção de código e deploy integrado contínuo.
 
 ---
 
-### 🧪 Fase 8: Documentação de Arquitetura & Diretrizes de Qualidade
+### 🔑 Fase 6: Shell Dinâmica, Segurança & Lógica de Canary
+Segurança corporativa e orquestração do ecossistema baseada em dados:
 
-Capacitação técnica de equipes para criação, integração e qualidade consistente dentro do ecossistema de MFEs.
+- [ ] **[Issue 6.1] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` do CDN.
+- [ ] **[Issue 6.2] Lógica de Liberação Progressiva (Canary Deploy):** Configurar o status `canary` no manifesto que exibe e permite o carregamento de MFEs experimentais apenas para usuários beta-testers.
+- [ ] **[Issue 6.3] Bloqueio e Guarda de Rotas para Status `inactive` (`MfeStatusGuard`):** Criação de Guard de Rota global na Shell para impedir acessos diretos via URL a MFEs desativados.
 
-- **[Issue 8.1] Ajuste de Thresholds e Mocks no Schematic:** Configuração padrão de cobertura do Vitest em 85%-90% em novos remotes e templates para mocking de APIs com MSW.
-- **[Issue 8.2] Playbook do Desenvolvedor - Scaffolding & Integração:** Escrita do guia de onboarding de criação de remotes e registro no manifesto central.
-- **[Issue 8.3] Playbook de Comunicação & Roteamento:** Manual de integração por eventos nativos, cache e delegação de rotas por URL.
-- **[Issue 8.4] Playbook de Qualidade & Testes:** Visão técnica das bibliotecas comuns (@fitlab/tooling e @fitlab/design-system) e recomendações de testes locais.
+---
+
+### 🏋️ Fase 7: Integração Gradual — MFE Interval Timer (React 18)
+Implementar o fluxo de ciclo de vida real de um novo remoto extra sob o pipeline dinâmico de Canary:
+
+- [ ] **[Issue 7.1] Integração Local (Timer React):** Criar o remoto React, embrulhar como Custom Element (Web Component) e conectá-lo localmente na Shell em desenvolvimento.
+- [ ] **[Issue 7.2] Deploy da Casca em Canary:** Realizar o deploy do esqueleto do timer no S3 com status `canary` (validando o pipeline automatizado e garantindo que apenas usuários de teste acessem a rota).
+- [ ] **[Issue 7.3] Desenvolvimento Real & Integração:** Implementar o cronômetro circular reagindo ao evento de "série concluída" disparado pelo Workout Planner (Angular) via `@fitlab/tooling`, e promover a rota para `active` geral.
+
+---
+
+### 🍏 Fase 8: Integração Gradual — MFE Nutrition Wheel (Vue 3) & Workspace Switcher
+Adicionar o controle de workspaces baseados em Personas (Aluno, Professor, Tech) no roteador da Shell e desenvolver o terceiro MFE:
+
+- [ ] **[Issue 8.1] Integração Local (Nutrition Vue):** Criar o remoto Vue (`defineCustomElement`) e conectá-lo localmente em desenvolvimento.
+- [ ] **[Issue 8.2] Workspace Switcher na Shell:** Configurar o roteador e menus da Shell para gerenciar workspaces baseados em personas (ex: `/aluno/...`, `/professor/...`, `/tech/...`) validando permissões de acesso do perfil do usuário logado.
+- [ ] **[Issue 8.3] Sistema de Favoritos e Feedback Loop por Workspace:** Adicionar lógica de favoritar MFEs rápidos na sidebar e modal de avaliação de experiência do usuário.
+- [ ] **[Issue 8.4] Deploy & Homologação:** Deploy automático do app Vue no Workspace do Aluno (inicialmente em Canary, depois promovido).
+
+---
+
+### 📄 Fase 9: Integração Gradual — MFE Workout Card Gen (Flask) & MFE Administrativo (Canary Manager)
+Finalização dos apps das personas de Professor e Técnico:
+
+- [ ] **[Issue 9.1] Workspace Professor (Iframe Flask):** Integrar o app Python Flask (`fitlab-mfe-card-generator`) via Iframe controlado com PostMessage seguro para exportar os treinos em PDF.
+- [ ] **[Issue 9.2] Workspace Tech (MFE Administrativo):** Desenvolver o painel de administração (**Canary Manager & Dynamic Menu Engine**) para habilitar/desativar rotas e canaries visualmente no manifesto.
+- [ ] **[Issue 9.3] Deploy Final:** Homologação completa de todas as esteiras de deploy rodando de forma integrada.
+
+---
+
+### 📖 Fase 10: Playbooks de Governança & Qualidade
+Capacitação técnica de equipes para criação, integração e qualidade consistente dentro do ecossistema de MFEs:
+
+- [ ] **[Issue 10.1] Playbook de Scaffolding & Integração:** Guia de onboarding para novos desenvolvedores e criação de novos remotes.
+- [ ] **[Issue 10.2] Playbook de Comunicação & Qualidade:** Guia de testes unitários (Vitest/Karma), MSW mocks e boas práticas de boundaries.
