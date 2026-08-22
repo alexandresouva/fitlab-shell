@@ -5,19 +5,45 @@
       Selecione um dos módulos integrados para gerenciar treinos, nutrição e
       performance.
     </p>
+    <div class="validation-panel">
+      <fitlab-button
+        variant="primary"
+        (click)="triggerValidation()"
+        [attr.disabled]="isValidating() ? true : null"
+      >
+        @if (isValidating()) {
+          Validando Sistema...
+        } @else {
+          Testar Design System
+        }
+      </fitlab-button>
+      @if (isValidating()) {
+        <fitlab-loader size="sm" class="validation-loader"></fitlab-loader>
+      }
+    </div>
   </div>
 
   <div class="modules-grid">
     @for (module of mfeModules; track module.route) {
-      <a [routerLink]="module.route" class="module-card">
-        <div class="card-header">
-          <span class="card-icon" aria-hidden="true">{{ module.icon }}</span>
-          <span class="card-badge">{{ module.badge }}</span>
-        </div>
-        <h3>{{ module.title }}</h3>
-        <p>{{ module.description }}</p>
-        <span class="card-action">Acessar Módulo &rarr;</span>
-      </a>
+      <fitlab-card glass="true" class="module-card-wrapper">
+        <fitlab-card-header>
+          <span slot="icon" class="card-icon" aria-hidden="true">{{
+            module.icon
+          }}</span>
+          <fitlab-badge slot="badge">{{ module.badge }}</fitlab-badge>
+        </fitlab-card-header>
+        <fitlab-card-content>
+          <h3>{{ module.title }}</h3>
+          <p>{{ module.description }}</p>
+        </fitlab-card-content>
+        <fitlab-card-footer>
+          <fitlab-link>
+            <a [routerLink]="module.route">
+              Acessar Módulo <span slot="icon" aria-hidden="true">&rarr;</span>
+            </a>
+          </fitlab-link>
+        </fitlab-card-footer>
+      </fitlab-card>
     }
   </div>
 </div>

@@ -1,4 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import {
+  Component,
+  input,
+  output,
+  CUSTOM_ELEMENTS_SCHEMA
+} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 export interface NavItem {
@@ -12,6 +17,7 @@ export interface NavItem {
   selector: 'app-sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
 })

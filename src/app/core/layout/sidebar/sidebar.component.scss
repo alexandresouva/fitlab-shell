@@ -1,85 +1,37 @@
-.shell-sidebar {
+:host {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 240px;
-  background-color: var(--bg-surface);
-  border-right: 1px solid var(--border-color);
-  padding: 1.25rem 0.75rem;
-  transition:
-    transform 0.25s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-  min-height: calc(100vh - 64px);
+  flex-shrink: 0;
 
-  @media (max-width: 768px) {
-    position: fixed;
+  @media (min-width: 769px) {
+    position: sticky;
     top: 64px;
-    left: 0;
-    bottom: 0;
-    z-index: 40;
-    transform: translateX(-100%);
-    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
-
-    &.open {
-      transform: translateX(0);
-    }
+    height: calc(100vh - 64px);
   }
+}
 
-  .sidebar-nav {
-    .nav-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
+.nav-list {
+  list-style: none;
+  padding: 0 0.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
 
-      .nav-item {
-        .nav-link {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.65rem 0.85rem;
-          border-radius: 8px;
-          text-decoration: none;
-          color: var(--text-secondary);
-          font-size: 0.925rem;
-          font-weight: 500;
-          transition:
-            background-color 0.15s ease,
-            color 0.15s ease;
+.sidebar-footer {
+  padding: 0.75rem 1.35rem 0;
+  border-top: 1px solid var(--border-color);
 
-          .nav-icon {
-            font-size: 1.15rem;
-          }
-
-          .nav-label {
-            flex: 1;
-          }
-
-          &:hover {
-            background-color: var(--bg-hover);
-            color: var(--text-primary);
-          }
-
-          &.active {
-            background-color: var(--badge-bg);
-            color: var(--primary);
-            font-weight: 600;
-          }
-        }
-      }
-    }
+  .version-badge {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
   }
+}
 
-  .sidebar-footer {
-    padding: 0.75rem 0.85rem 0;
-    border-top: 1px solid var(--border-color);
-
-    .version-badge {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-  }
+:host-context(html.dark) .sidebar-footer {
+  border-top-color: var(--border-color);
+}
+:host-context(html[data-theme='dark']) .sidebar-footer {
+  border-top-color: var(--border-color);
 }
