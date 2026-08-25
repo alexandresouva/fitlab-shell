@@ -1,4 +1,10 @@
-import { Component, inject, input, output } from '@angular/core';
+import {
+  Component,
+  inject,
+  input,
+  output,
+  CUSTOM_ELEMENTS_SCHEMA
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../auth/auth.service';
@@ -8,6 +14,7 @@ import { ThemeService } from '../../theme/theme.service';
   selector: 'app-header',
   standalone: true,
   imports: [RouterLink],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })

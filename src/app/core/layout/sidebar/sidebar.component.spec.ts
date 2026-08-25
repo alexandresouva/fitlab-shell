@@ -25,7 +25,7 @@ describe('SidebarComponent', () => {
   it('should render all navigation items', () => {
     expect(component.navItems).toHaveSize(5);
     const compiled = fixture.nativeElement as HTMLElement;
-    const links = compiled.querySelectorAll('.nav-link');
+    const links = compiled.querySelectorAll('fitlab-nav-item');
     expect(links).toHaveSize(5);
   });
 

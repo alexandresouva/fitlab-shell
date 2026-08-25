@@ -1,24 +1,25 @@
-<aside id="shell-sidebar" class="shell-sidebar" [class.open]="isOpen()">
+<fitlab-sidebar [attr.open]="isOpen() ? true : null">
   <nav class="sidebar-nav" aria-label="Navegação Principal">
     <ul class="nav-list">
       @for (item of navItems; track item.route) {
         <li class="nav-item">
-          <a
-            [routerLink]="item.route"
+          <fitlab-nav-item
+            #rla="routerLinkActive"
+            [routerLinkActive]="'active'"
             [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-            routerLinkActive="active"
-            class="nav-link"
-            (click)="onNavClick()"
+            [attr.active]="rla.isActive ? true : null"
           >
-            <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
-            <span class="nav-label">{{ item.label }}</span>
-          </a>
+            <a [routerLink]="item.route" (click)="onNavClick()">
+              <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+            </a>
+          </fitlab-nav-item>
         </li>
       }
     </ul>
   </nav>
 
-  <div class="sidebar-footer">
+  <div slot="footer" class="sidebar-footer">
     <span class="version-badge">FitLab v1.0 &bull; Shell</span>
   </div>
-</aside>
+</fitlab-sidebar>

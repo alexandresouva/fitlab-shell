@@ -1,5 +1,5 @@
-<header class="shell-header">
-  <div class="header-left">
+<fitlab-header>
+  <div slot="left" class="header-left">
     <button
       type="button"
       class="btn-hamburger"
@@ -16,11 +16,11 @@
     <a routerLink="/" class="brand-link">
       <span class="brand-icon" aria-hidden="true">🏋️‍♂️</span>
       <h1 class="brand-title">FitLab</h1>
-      <span class="brand-badge">Shell</span>
+      <fitlab-badge>Shell</fitlab-badge>
     </a>
   </div>
 
-  <div class="header-right">
+  <div slot="right" class="header-right">
     <button
       type="button"
       class="btn-theme-toggle"
@@ -51,4 +51,4 @@
       <span class="user-name">{{ authService.currentUser().name }}</span>
     </div>
   </div>
-</header>
+</fitlab-header>

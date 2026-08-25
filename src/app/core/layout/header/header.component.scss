@@ -1,11 +1,6 @@
-.shell-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-  padding: 0 1.5rem;
-  background-color: var(--bg-header);
-  border-bottom: 1px solid var(--border-color);
+:host {
+  display: block;
+  width: 100%;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -58,17 +53,6 @@
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.02em;
-  }
-
-  .brand-badge {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    background-color: var(--badge-bg);
-    color: var(--primary);
   }
 }
 
