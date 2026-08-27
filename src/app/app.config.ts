@@ -8,6 +8,7 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { MfeContextService } from './core/context/mfe-context.service';
+import { MfeRoutePublisherService } from './core/navigation/mfe-route-publisher.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,8 +17,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: () => {
-        const service = inject(MfeContextService);
-        return () => service;
+        // Init both services on startup, ensuring mfeContext and mfeRoutePublisher are available from the begin
+        return () => ({
+          context: inject(MfeContextService),
+          publisher: inject(MfeRoutePublisherService)
+        });
       },
       multi: true
     }
