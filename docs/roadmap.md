@@ -89,7 +89,7 @@ Definição de limites estritos de comunicação e compartilhamento de contratos
 
 - [x] **[Issue 4.1] Setup & Publicação do Design System (`@fitlab/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais de tema (tokens) compartilhadas.
 - [x] **[Issue 4.2] Comunicação Reativa Universal (`@fitlab/tooling`):** Extensão do tooling com os hooks idiomáticos de React (`useMfeEvent`) e Vue (`useMfeRef`) prontos para o consumo futuro dos próximos MFEs.
-- [ ] **[Issue 4.3] Comunicação via Roteamento e URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (*Wildcard Routing*) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
+- [x] **[Issue 4.3] Comunicação via Roteamento e URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (*Wildcard Routing*) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
 - [ ] **[Issue 4.4] Centralização de Contratos de API Universais (`@fitlab/contracts`):** Sub-pacote contendo esquemas Zod transversais (como `UserProfileDTO` e `UserPermissionsDTO`), impedindo o acoplamento de DTOs de domínio de negócio específicos.
 
 ---
@@ -107,7 +107,7 @@ Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo
 ### 🔑 Fase 6: Shell Dinâmica, Segurança & Lógica de Canary
 Segurança corporativa e orquestração do ecossistema baseada em dados:
 
-- [ ] **[Issue 6.1] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` do CDN.
+- [ ] **[Issue 6.1] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` do CDN, eliminando de vez as rotas estáticas na Shell para viabilizar novos deploys de MFEs com acoplamento zero.
 - [ ] **[Issue 6.2] Lógica de Liberação Progressiva (Canary Deploy):** Configurar o status `canary` no manifesto que exibe e permite o carregamento de MFEs experimentais apenas para usuários beta-testers.
 - [ ] **[Issue 6.3] Bloqueio e Guarda de Rotas para Status `inactive` (`MfeStatusGuard`):** Criação de Guard de Rota global na Shell para impedir acessos diretos via URL a MFEs desativados.
 
