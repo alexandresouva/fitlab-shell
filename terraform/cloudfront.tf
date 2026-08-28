@@ -23,10 +23,10 @@ resource "aws_cloudfront_distribution" "mfe_cdn" {
     target_origin_id = "S3-MfeAssets"
 
     # Managed-CachingOptimized Cache Policy
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
+    cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
 
     # Managed-CORS-S3Origin Origin Request Policy (passes Origin header to S3)
-    origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-d4c650ea6fcf"
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.cors_s3.id
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
@@ -56,4 +56,12 @@ resource "aws_cloudfront_distribution" "mfe_cdn" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+}
+
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
+data "aws_cloudfront_origin_request_policy" "cors_s3" {
+  name = "Managed-CORS-S3Origin"
 }
