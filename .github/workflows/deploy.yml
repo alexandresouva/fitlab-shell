@@ -36,46 +36,10 @@ jobs:
       - name: Build Application
         run: npm run build
 
-  terraform:
-    name: Terraform Plan & Apply
+  deploy:
+    name: Apply Infrastructure & Deploy Assets
     runs-on: ubuntu-latest
     needs: validate-and-test
-    defaults:
-      run:
-        working-directory: terraform
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_DEFAULT_REGION: us-east-1
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Format Check
-        run: terraform fmt -check
-
-      - name: Terraform Validate
-        run: terraform validate
-
-      - name: Terraform Plan
-        run: terraform plan -no-color
-
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve
-
-  deploy:
-    name: Deploy to AWS S3 / CloudFront
-    runs-on: ubuntu-latest
-    needs: terraform
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -97,8 +61,29 @@ jobs:
       - name: Build Application
         run: npm run build
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      - name: Terraform Apply
+        run: |
+          cd terraform
+          terraform apply -auto-approve
+
+      - name: Get CloudFront Distribution ID
+        run: |
+          cd terraform
+          echo "DIST_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
+
       - name: Sync to S3
         run: aws s3 sync dist/fitlab-shell/browser/ s3://fitlab-dev-mfe-assets/ --delete
 
       - name: Invalidate CloudFront Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }} --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
