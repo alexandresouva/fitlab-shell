@@ -72,7 +72,7 @@ jobs:
           npm run build
 
   deploy:
-    name: Apply Infrastructure & Deploy Assets
+    name: Deploy Assets
     runs-on: ubuntu-latest
     needs: validate-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -127,29 +127,8 @@ jobs:
           cd fitlab-shell
           npm run build
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
-          terraform_wrapper: false
-
-      - name: Terraform Init
-        run: |
-          cd fitlab-shell/terraform
-          terraform init
-
-      - name: Terraform Apply
-        run: |
-          cd fitlab-shell/terraform
-          terraform apply -auto-approve
-
-      - name: Get CloudFront Distribution ID
-        run: |
-          cd fitlab-shell/terraform
-          echo "DIST_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
-
       - name: Sync to S3
-        run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-dev-mfe-assets/ --delete
+        run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-mfe-shell-dev/ --delete
 
       - name: Invalidate CloudFront Cache
-        run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }} --paths "/*"
