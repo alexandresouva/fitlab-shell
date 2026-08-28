@@ -97,7 +97,7 @@ Definição de limites estritos de comunicação e compartilhamento de contratos
 Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo de negócio do primeiro MFE:
 
 - [x] **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema.
-- [ ] **[Issue 5.2] Pipelines de CI/CD da Shell e Workout Planner (Casca):** Template de GitHub Actions para deploy automático da Shell, do Design System, do Tooling e da casca de aviso do Workout Planner no S3.
+- [x] **[Issue 5.2] Pipelines de CI/CD da Shell e Workout Planner (Casca):** Template de GitHub Actions para deploy automático da Shell, do Design System, do Tooling e da casca de aviso do Workout Planner no S3.
 - [ ] **[Issue 5.3] Script de Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
 - [ ] **[Issue 5.4] Arquitetura de Negócio Local (Finalização do Workout Planner):** Desenvolvimento do fluxo de negócio de montagem de exercícios seguindo o padrão modular (domain, mappers, Signal Store/Facade), testando a promoção de código e deploy integrado contínuo.
 
