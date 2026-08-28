@@ -15,26 +15,61 @@ jobs:
     name: Validate and Test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Shell Code
         uses: actions/checkout@v4
+        with:
+          path: fitlab-shell
+
+      - name: Checkout Tooling Code
+        uses: actions/checkout@v4
+        with:
+          repository: alexandresouva/fitlab-lib-tooling
+          path: fitlab-lib-tooling
+
+      - name: Checkout Design System Code
+        uses: actions/checkout@v4
+        with:
+          repository: alexandresouva/fitlab-lib-design-system
+          path: fitlab-lib-design-system
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: fitlab-shell/package-lock.json
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install and Build Tooling
+        run: |
+          cd fitlab-lib-tooling
+          npm ci
+          npm run build
+
+      - name: Install and Build Design System
+        run: |
+          cd fitlab-lib-design-system
+          npm ci
+          npm run build
+
+      - name: Install Shell Dependencies
+        run: |
+          cd fitlab-shell
+          npm ci
 
       - name: Lint Code
-        run: npm run lint
+        run: |
+          cd fitlab-shell
+          npm run lint
 
       - name: Run Tests
-        run: npm run test:ci
+        run: |
+          cd fitlab-shell
+          npm run test:ci
 
       - name: Build Application
-        run: npm run build
+        run: |
+          cd fitlab-shell
+          npm run build
 
   deploy:
     name: Apply Infrastructure & Deploy Assets
@@ -46,20 +81,51 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
     steps:
-      - name: Checkout Code
+      - name: Checkout Shell Code
         uses: actions/checkout@v4
+        with:
+          path: fitlab-shell
+
+      - name: Checkout Tooling Code
+        uses: actions/checkout@v4
+        with:
+          repository: alexandresouva/fitlab-lib-tooling
+          path: fitlab-lib-tooling
+
+      - name: Checkout Design System Code
+        uses: actions/checkout@v4
+        with:
+          repository: alexandresouva/fitlab-lib-design-system
+          path: fitlab-lib-design-system
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: fitlab-shell/package-lock.json
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install and Build Tooling
+        run: |
+          cd fitlab-lib-tooling
+          npm ci
+          npm run build
+
+      - name: Install and Build Design System
+        run: |
+          cd fitlab-lib-design-system
+          npm ci
+          npm run build
+
+      - name: Install Shell Dependencies
+        run: |
+          cd fitlab-shell
+          npm ci
 
       - name: Build Application
-        run: npm run build
+        run: |
+          cd fitlab-shell
+          npm run build
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -69,21 +135,21 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd terraform
+          cd fitlab-shell/terraform
           terraform init
 
       - name: Terraform Apply
         run: |
-          cd terraform
+          cd fitlab-shell/terraform
           terraform apply -auto-approve
 
       - name: Get CloudFront Distribution ID
         run: |
-          cd terraform
+          cd fitlab-shell/terraform
           echo "DIST_ID=$(terraform output -raw cloudfront_distribution_id)" >> $GITHUB_ENV
 
       - name: Sync to S3
-        run: aws s3 sync dist/fitlab-shell/browser/ s3://fitlab-dev-mfe-assets/ --delete
+        run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-dev-mfe-assets/ --delete
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
