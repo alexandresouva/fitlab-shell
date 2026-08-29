@@ -127,10 +127,6 @@ jobs:
           cd fitlab-shell
           npm run build
 
-      - name: Update manifest for production
-        run: |
-          echo '{"mfe-workout-planner": "/workouts/remoteEntry.json"}' > fitlab-shell/dist/fitlab-shell/browser/federation.manifest.json
-
       - name: Sync to S3
         run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-mfe-shell-dev/ --delete
 

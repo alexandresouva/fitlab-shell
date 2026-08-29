@@ -69,8 +69,14 @@
             "preserveSymlinks": true,
             "assets": [
               {
+                "glob": "federation.manifest.json",
+                "input": "public/dev",
+                "output": "/"
+              },
+              {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public",
+                "ignore": ["dev/**", "prod/**"]
               }
             ],
             "styles": ["src/styles.scss"],
@@ -78,6 +84,18 @@
           },
           "configurations": {
             "production": {
+              "assets": [
+                {
+                  "glob": "federation.manifest.json",
+                  "input": "public/prod",
+                  "output": "/"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "ignore": ["dev/**", "prod/**"]
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
