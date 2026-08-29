@@ -98,7 +98,7 @@ Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo
 
 - [x] **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema.
 - [x] **[Issue 5.2] Pipelines de CI/CD da Shell e Workout Planner (Casca):** Template de GitHub Actions para deploy automático da Shell, do Design System, do Tooling e da casca de aviso do Workout Planner no S3.
-- [ ] **[Issue 5.3] Script de Atualização Dinâmica do Manifesto no Deploy:** Script na esteira de deploy dos remotes que registra ou atualiza seus metadados na pasta `/metadata/` do S3 para consolidação atômica de rotas.
+- [x] **[Issue 5.3] Geração Declarativa do Manifesto via Terraform no S3:** Geração automatizada do `federation.manifest.json` na raiz da CDN baseando-se na lista central de MFEs de infraestrutura, protegendo-o durante os deploys.
 - [ ] **[Issue 5.4] Arquitetura de Negócio Local (Finalização do Workout Planner):** Desenvolvimento do fluxo de negócio de montagem de exercícios seguindo o padrão modular (domain, mappers, Signal Store/Facade), testando a promoção de código e deploy integrado contínuo.
 
 ---
