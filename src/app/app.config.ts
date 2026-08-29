@@ -17,11 +17,10 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       useFactory: () => {
-        // Init both services on startup, ensuring mfeContext and mfeRoutePublisher are available from the begin
-        return () => ({
-          context: inject(MfeContextService),
-          publisher: inject(MfeRoutePublisherService)
-        });
+        // Init both services on startup, ensuring mfeContext and mfeRoutePublisher are available from the beginning
+        inject(MfeContextService);
+        inject(MfeRoutePublisherService);
+        return () => Promise.resolve();
       },
       multi: true
     }
