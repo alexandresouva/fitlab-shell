@@ -128,7 +128,7 @@ jobs:
           npm run build
 
       - name: Sync to S3
-        run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-mfe-shell-dev/ --delete
+        run: aws s3 sync fitlab-shell/dist/fitlab-shell/browser/ s3://fitlab-mfe-shell-dev/ --delete --exclude "federation.manifest.json"
 
       - name: Invalidate CloudFront Cache
         run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }} --paths "/*"

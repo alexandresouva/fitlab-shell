@@ -86,14 +86,9 @@
             "production": {
               "assets": [
                 {
-                  "glob": "federation.manifest.json",
-                  "input": "public/prod",
-                  "output": "/"
-                },
-                {
                   "glob": "**/*",
                   "input": "public",
-                  "ignore": ["dev/**", "prod/**"]
+                  "ignore": ["dev/**", "prod/**", "federation.manifest.json"]
                 }
               ],
               "budgets": [
