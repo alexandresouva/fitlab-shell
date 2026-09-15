@@ -96,9 +96,9 @@ graph TB
     BOOTSTRAP --> NAV_GUARD
     NAV_GUARD --> WRAPPER
 
-    WRAPPER -->|loadRemoteModule()| REMOTE_A
-    WRAPPER -->|customElements.define()| REMOTE_B
-    WRAPPER -->|defineCustomElement()| REMOTE_C
+    WRAPPER -->|loadRemoteModule| REMOTE_A
+    WRAPPER -->|customElements define| REMOTE_B
+    WRAPPER -->|defineCustomElement| REMOTE_C
     WRAPPER -->|sandbox iframe src| REMOTE_D
 
     %% Relações de Estado & Comunicação
@@ -182,17 +182,17 @@ module.exports = withNativeFederation({
 
 ```mermaid
 flowchart TD
-    START([Requisição de Rota pelo Usuário]) --> GUARD{MfeStatusGuard: MFE Ativo?}
-    GUARD -- Não --> FALLBACK[Exibe Fallback / 404 sem baixar scripts]
-    GUARD -- Sim --> WRAPPER[MfeWrapperComponent: Renderiza Header + Skeleton]
+    START(["Requisição de Rota pelo Usuário"]) --> GUARD{"MfeStatusGuard: MFE Ativo?"}
+    GUARD -- Não --> FALLBACK["Exibe Fallback / 404 sem baixar scripts"]
+    GUARD -- Sim --> WRAPPER["MfeWrapperComponent: Renderiza Header + Skeleton"]
 
-    WRAPPER --> TYPE{Qual o 'type' no Manifesto?}
+    WRAPPER --> TYPE{"Qual o tipo no Manifesto?"}
 
-    TYPE -- 'angular-native' --> STRAT_A[<b>1. Native Federation</b><br/>loadRemoteModule()<br/>Injeta rotas no Angular Router<br/>Compartilha Angular Core em memória]
-    TYPE -- 'web-component' --> STRAT_B[<b>2. Custom Element</b><br/>Baixa bundle isolado<br/>customElements.define('mfe-tag')<br/>document.createElement('mfe-tag')<br/>Framework interno agnóstico (React/Vue)]
-    TYPE -- 'iframe' --> STRAT_C[<b>3. Iframe Controlado</b><br/>Cria &lt;iframe sandbox&gt;<br/>Carrega URL legada / SSR<br/>Estabelece PostMessage Bridge seguro]
+    TYPE -- angular-native --> STRAT_A["1. Native Federation<br/>loadRemoteModule<br/>Injeta rotas no Angular Router<br/>Compartilha Angular Core em memória"]
+    TYPE -- web-component --> STRAT_B["2. Custom Element<br/>Baixa bundle isolado<br/>customElements.define<br/>document.createElement<br/>Framework interno agnóstico (React/Vue)"]
+    TYPE -- iframe --> STRAT_C["3. Iframe Controlado<br/>Cria iframe sandbox<br/>Carrega URL legada / SSR<br/>Estabelece PostMessage Bridge seguro"]
 
-    STRAT_A --> MOUNT([Módulo Montado & Fade-In Ativo])
+    STRAT_A --> MOUNT(["Módulo Montado & Fade-In Ativo"])
     STRAT_B --> MOUNT
     STRAT_C --> MOUNT
 ```
@@ -401,7 +401,7 @@ graph LR
     end
 
     CLIENT -->|HTTPS / Único Domínio| CF
-    CF -->|Default (*)| S3_SHELL
+    CF -->|Default root /*| S3_SHELL
     CF -->|/workouts/*| S3_WORKOUTS
     CF -->|/timer/*| S3_TIMER
     CF -->|/nutrition/*| S3_NUTRITION

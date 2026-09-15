@@ -239,18 +239,18 @@ export interface ShellEventPayloadMap {
 
 ```mermaid
 flowchart TD
-    REQ[Navegação Solicitada: /aluno/workouts] --> FETCH_MANIFEST[Lê navigation.manifest.json em memória]
-    FETCH_MANIFEST --> STATUS_CHECK{Qual o status do MFE?}
+    REQ["Navegação Solicitada: /aluno/workouts"] --> FETCH_MANIFEST["Lê navigation.manifest.json em memória"]
+    FETCH_MANIFEST --> STATUS_CHECK{"Qual o status do MFE?"}
 
-    STATUS_CHECK -- 'inactive' --> BLOCK[<b>Bloqueio Imediato</b><br/>Exibe fallback de indisponibilidade<br/>Nenhum arquivo JS é baixado]
+    STATUS_CHECK -- Inativo --> BLOCK["Bloqueio Imediato<br/>Exibe fallback de indisponibilidade<br/>Nenhum script JS é baixado"]
 
-    STATUS_CHECK -- 'canary' --> CANARY_CHECK{Usuário logado tem permissão 'beta-tester'?}
-    CANARY_CHECK -- Não --> HIDE[Redireciona para /home<br/>Oculta do menu lateral]
-    CANARY_CHECK -- Sim --> ALLOW[Permite navegação canary]
+    STATUS_CHECK -- Canary --> CANARY_CHECK{"Usuário possui role beta-tester?"}
+    CANARY_CHECK -- Não --> HIDE["Redireciona para /home<br/>Oculta do menu lateral"]
+    CANARY_CHECK -- Sim --> ALLOW["Permite navegação canary"]
 
-    STATUS_CHECK -- 'active' --> ALLOW
+    STATUS_CHECK -- Ativo --> ALLOW
 
-    ALLOW --> LOAD_MFE[<b>MfeWrapperComponent:</b><br/>Inicia carga do módulo via estratégia configurada]
+    ALLOW --> LOAD_MFE["MfeWrapperComponent:<br/>Inicia carga do módulo via estratégia configurada"]
 ```
 
 ### 5.2. Manifesto Dinâmico de Navegação (`navigation.manifest.json`)
