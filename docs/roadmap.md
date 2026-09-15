@@ -51,7 +51,8 @@ graph TD
 ## 📅 Detalhamento das Fases
 
 ### 🟢 Fase 1: Governança, Automação & Scaffolding
-*Status: **CONCLUÍDO***
+
+_Status: **CONCLUÍDO**_
 
 - [x] **[Issue 1.1] Setup Inicial do Pacote `@fitlab/tooling`:** Criação do repositório dedicado para o pacote NPM de ferramentas.
 - [x] **[Issue 1.2] Configuração de Linting para Remotos:** Centralização das regras de qualidade (ESLint Flat Config + Prettier) no pacote de tooling.
@@ -64,7 +65,8 @@ graph TD
 ---
 
 ### 🚀 Fase 2: Configuração da Shell (Host App)
-*Status: **CONCLUÍDO***
+
+_Status: **CONCLUÍDO**_
 
 - [x] **[Issue 2.1] Scaffold Inicial do Repositório `fitlab-shell`:** Inicialização da aplicação Angular utilizando o compilador padrão `esbuild`.
 - [x] **[Issue 2.2] Configuração de Linting e Boundaries Locais:** Escrita manual do `eslint.config.mjs` da Shell com regras estritas de boundaries.
@@ -76,7 +78,8 @@ graph TD
 ---
 
 ### 📦 Fase 3: Configuração do MFE Remote (Workout Planner)
-*Status: **CONCLUÍDO***
+
+_Status: **CONCLUÍDO**_
 
 - [x] **[Issue 3.1] Scaffold & Bootstrapping do Remote:** Execução do schematic `@fitlab/tooling:mfe-remote` para estruturar a aplicação na porta `4201`.
 - [x] **[Issue 3.2] Configuração do Native Federation & Exposição do Módulo:** Ajuste do `federation.config.js` do Remote declarando a exposição das rotas do negócio (`./routes`).
@@ -85,15 +88,17 @@ graph TD
 ---
 
 ### 🔴 Fase 4: Compartilhamento de Código & Contratos (Foco nas Libs)
+
 Definição de limites estritos de comunicação e compartilhamento de contratos entre os projetos antes de mover para produção:
 
 - [x] **[Issue 4.1] Setup & Publicação do Design System (`@fitlab/design-system`):** Criação de repositório isolado contendo componentes puros e variáveis CSS globais de tema (tokens) compartilhadas.
 - [x] **[Issue 4.2] Comunicação Reativa Universal (`@fitlab/tooling`):** Extensão do tooling com os hooks idiomáticos de React (`useMfeEvent`) e Vue (`useMfeRef`) prontos para o consumo futuro dos próximos MFEs.
-- [x] **[Issue 4.3] Comunicação via Roteamento e URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (*Wildcard Routing*) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
+- [x] **[Issue 4.3] Comunicação via Roteamento e URL:** Padronização da passagem de dados por URL utilizando delegação de rotas (_Wildcard Routing_) e leitura reativa de parâmetros nos sub-roteadores dos Remotos.
 
 ---
 
 ### ⚙️ Fase 5: Infraestrutura de CDN, Primeiro Deploy & Workout Planner Feature
+
 Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo de negócio do primeiro MFE:
 
 - [x] **[Issue 5.1] Terraform do Bucket de CDNs e CloudFront:** Criação declarativa da distribuição CloudFront e do Bucket S3 único compartilhado para armazenamento de todos os ativos do ecossistema.
@@ -104,6 +109,7 @@ Estabelecer a infraestrutura em nuvem, criar a esteira de CD e completar o fluxo
 ---
 
 ### 🔑 Fase 6: Shell Dinâmica, Segurança & Lógica de Canary
+
 Segurança corporativa e orquestração do ecossistema baseada em dados:
 
 - [ ] **[Issue 6.1] Bootstrap do Manifesto de Navegação na Shell:** Configurar a inicialização da Shell para buscar dinamicamente o arquivo `navigation.manifest.json` do CDN, eliminando de vez as rotas estáticas na Shell para viabilizar novos deploys de MFEs com acoplamento zero.
@@ -113,6 +119,7 @@ Segurança corporativa e orquestração do ecossistema baseada em dados:
 ---
 
 ### 🏋️ Fase 7: Integração Gradual — MFE Interval Timer (React 18)
+
 Implementar o fluxo de ciclo de vida real de um novo remoto extra sob o pipeline dinâmico de Canary:
 
 - [ ] **[Issue 7.1] Integração Local (Timer React):** Criar o remoto React, embrulhar como Custom Element (Web Component) e conectá-lo localmente na Shell em desenvolvimento.
@@ -122,6 +129,7 @@ Implementar o fluxo de ciclo de vida real de um novo remoto extra sob o pipeline
 ---
 
 ### 🍏 Fase 8: Integração Gradual — MFE Nutrition Wheel (Vue 3) & Workspace Switcher
+
 Adicionar o controle de workspaces baseados em Personas (Aluno, Professor, Tech) no roteador da Shell e desenvolver o terceiro MFE:
 
 - [ ] **[Issue 8.1] Integração Local (Nutrition Vue):** Criar o remoto Vue (`defineCustomElement`) e conectá-lo localmente em desenvolvimento.
@@ -132,6 +140,7 @@ Adicionar o controle de workspaces baseados em Personas (Aluno, Professor, Tech)
 ---
 
 ### 📄 Fase 9: Integração Gradual — MFE Workout Card Gen (Flask) & MFE Administrativo (Canary Manager)
+
 Finalização dos apps das personas de Professor e Técnico:
 
 - [ ] **[Issue 9.1] Workspace Professor (Iframe Flask):** Integrar o app Python Flask (`fitlab-mfe-card-generator`) via Iframe controlado com PostMessage seguro para exportar os treinos em PDF.
@@ -141,6 +150,7 @@ Finalização dos apps das personas de Professor e Técnico:
 ---
 
 ### 📖 Fase 10: Playbooks de Governança & Qualidade
+
 Capacitação técnica de equipes para criação, integração e qualidade consistente dentro do ecossistema de MFEs:
 
 - [ ] **[Issue 10.1] Playbook de Scaffolding & Integração:** Guia de onboarding para novos desenvolvedores e criação de novos remotes.

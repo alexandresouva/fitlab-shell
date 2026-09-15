@@ -5,22 +5,6 @@
       Selecione um dos módulos integrados para gerenciar treinos, nutrição e
       performance.
     </p>
-    <div class="validation-panel">
-      <fitlab-button
-        variant="primary"
-        (click)="triggerValidation()"
-        [attr.disabled]="isValidating() ? true : null"
-      >
-        @if (isValidating()) {
-          Validando Sistema...
-        } @else {
-          Testar Design System
-        }
-      </fitlab-button>
-      @if (isValidating()) {
-        <fitlab-loader size="sm" class="validation-loader"></fitlab-loader>
-      }
-    </div>
   </div>
 
   <div class="modules-grid">

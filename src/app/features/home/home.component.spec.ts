@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
 import { HomeComponent } from './home.component';
@@ -36,24 +36,4 @@ describe('HomeComponent', () => {
     expect(compiled.textContent).toContain('Timer de Intervalos');
     expect(compiled.textContent).toContain('Gerador de Fichas');
   });
-
-  it('should initialize isValidating as false', () => {
-    expect(component.isValidating()).toBeFalse();
-  });
-
-  it('should toggle isValidating and reset after timeout', fakeAsync(() => {
-    component.triggerValidation();
-    expect(component.isValidating()).toBeTrue();
-    tick(2000);
-    expect(component.isValidating()).toBeFalse();
-  }));
-
-  it('should prevent triggerValidation if already validating', fakeAsync(() => {
-    component.triggerValidation();
-    expect(component.isValidating()).toBeTrue();
-    component.triggerValidation();
-    expect(component.isValidating()).toBeTrue();
-    tick(2000);
-    expect(component.isValidating()).toBeFalse();
-  }));
 });

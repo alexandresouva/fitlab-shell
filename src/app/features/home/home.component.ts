@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, signal } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 export interface MfeCard {
@@ -18,15 +18,6 @@ export interface MfeCard {
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  readonly isValidating = signal<boolean>(false);
-
-  triggerValidation(): void {
-    if (this.isValidating()) return;
-
-    this.isValidating.set(true);
-    setTimeout(() => this.isValidating.set(false), 2000);
-  }
-
   readonly mfeModules: MfeCard[] = [
     {
       title: 'Planejador de Treinos',

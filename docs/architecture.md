@@ -1,113 +1,331 @@
-# 🏗️ Arquitetura do Ecossistema MFE (Multirepo & Native Federation)
+# 🏗️ Especificação de Arquitetura: Enterprise Micro Frontends Reference Model
 
-Este documento registra as decisões de design de arquitetura, padrões técnicos e diretrizes operacionais acordadas para o ecossistema de **Micro Frontends (MFE)**.
-
-Para ver o tema de negócio oficial do projeto e como cada tecnologia é integrada, acesse o documento [project-theme.md](file:///Users/alexandre/Desktop/playground/mfe-cookbook/docs/project-theme.md).
-
----
-
-## 1. Visão Geral da Arquitetura
-
-O ecossistema é projetado sob o modelo **Multirepo** (repositórios de código separados) para simular o padrão de governança e escalabilidade do mercado real.
-
-### Componentes Principais do Ecossistema
-
-1.  **`mfe-tooling` (Pacote de Governança `@cookbook/mfe-tooling`):** Repositório isolado que centraliza regras de qualidade, modelos de IA e o motor de geração de novos projetos.
-2.  **`mfe-shell` (Host/Orquestrador):** A casca da aplicação que controla autenticação, tema global, e carrega dinamicamente os Micro Frontends.
-3.  **`mfe-[name]` (Remotes):** Aplicações independentes que hospedam subdomínios de negócio e expõem rotas de páginas para a Shell.
+> **Documento de Referência Técnica & Padrões Operacionais**  
+> _Este documento registra as decisões de design, padrões técnicos, diagramas de sequência e diretrizes arquiteturais para o ecossistema de Micro Frontends (MFE)._
 
 ---
 
-## 2. A Biblioteca de Governança (`@cookbook/mfe-tooling`)
+## 1. Posicionamento Arquitetural & Princípios
 
-A fundação do ecossistema é centralizada em um pacote de desenvolvimento que é distribuído para todos os repositórios remotos para evitar fadiga de configuração.
+### 1.1. Propósito do Ecossistema
 
-### O que o pacote `@cookbook/mfe-tooling` contém:
+A presente arquitetura foi concebida para responder à pergunta central da engenharia de frontend corporativa:  
+**Como permitir que dezenas de squads entreguem valor de forma contínua, em repositórios isolados e com autonomia de stack, garantindo consistência visual, performance e governança centralizada?**
 
-- **Módulo de Qualidade (ESLint & Prettier):** Centraliza as regras flat do ESLint, regras TypeScript, boas práticas do Angular Template (incluindo acessibilidade/a11y) e configurações padrão do `eslint-plugin-boundaries` focadas em remotos.
-- **Regras e Agentes de IA:** Centraliza as configurações do ciclo de desenvolvimento assistido por IA (como o arquivo `.cursorrules`, custom skills do diretório `.agents/` para criação automática de issues e commits semânticos).
-- **Angular Schematic de Scaffolding (`mfe-setup`):** Um gerador automatizado que cria o projeto a partir do zero utilizando o Angular CLI internamente na versão travada, e em seguida injeta automaticamente:
-  - Linting estendido do pacote central.
-  - Scripts de build configurados com o Native Federation.
-  - Estrutura de pastas Feature-Based (`core/`, `shared/`, `features/`).
-  - Instalação e configuração de Husky (git hooks) e Commitlint locais.
-  - Injeção da esteira local de IA (`.agents/`).
+### 1.2. O Domínio de Negócio como Vetor de Validação
 
----
+O produto **FitLab** (saúde, treinos e nutrição) atua exclusivamente como um **Case Study Prático de Validação**. Ele foi escolhido deliberadamente porque reúne características ideais para testar os limites da arquitetura:
 
-## 3. Arquitetura da Shell (`mfe-shell`)
+- Módulos de fluxo intenso (Treinos com Angular 18 e Signals).
+- Componentes de renderização em alta frequência com física de animação (Cronômetro com React 18).
+- Widgets visuais compactos isolados (Macronutrientes com Vue 3).
+- Serviços utilitários legados executados no backend (Exportação PDF com Python Flask).
 
-Por ser uma aplicação única e com o papel de orquestrador, a Shell não consome o schematic de geração de remotos, tendo suas regras configuradas de forma direta:
-
-- **Configurações Locais:** Arquivos de linting e regras de boundaries são escritos diretamente em seu repositório, focados em proteger as camadas estruturais da casca (ex: separação estrita de `core/layout`, `core/auth`, `core/theme`).
-- **Layout & Core Reativo:** A Shell é responsável por expor a casca visual e prover estados globais reativos baseados em **Angular Signals** (como chaveamento de tema claro/escuro via injeção de classes HTML + variáveis CSS globais, e tokens de autenticação).
+Essa mesma arquitetura de referência é 100% transferível para verticais como FinTech (Internet Banking + Checkout + PIX), E-commerce (Catálogo + Carrinho + Recomendações) ou Portais Corporativos B2B.
 
 ---
 
-## 4. Compartilhamento de Dependências & Negociação em Runtime
+## 2. Topologia do Sistema & Fluxo de Dados Global
 
-Para evitar duplicação de pacotes (como baixar o Angular duas vezes) e garantir estabilidade de execução, adotamos o compartilhamento de dependências via **Native Federation** suportado por **Import Maps** nativos do navegador.
+```mermaid
+graph TD
+    classDef edge fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#fff;
+    classDef storage fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef host fill:#4338ca,stroke:#6366f1,stroke-width:2px,color:#fff;
+    classDef remote fill:#047857,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef bus fill:#b45309,stroke:#f59e0b,stroke-width:2px,color:#fff;
 
-### Tabela de Diretrizes de Versionamento
+    subgraph AWS_INFRA ["Nuvem AWS (Infra as Code via Terraform)"]
+        CF["AWS CloudFront (Edge Router)"]:::edge
+        S3_SHELL["S3: fitlab-mfe-shell-dev<br/>(Shell + Manifests)"]:::storage
+        S3_WORKOUTS["S3: fitlab-mfe-workouts-dev<br/>(/workouts/*)"]:::storage
+        S3_TIMER["S3: fitlab-mfe-timer-dev<br/>(/timer/*)"]:::storage
+        S3_NUTRITION["S3: fitlab-mfe-nutrition-dev<br/>(/nutrition/*)"]:::storage
+        S3_CARDS["S3: fitlab-mfe-card-generator-dev<br/>(/card-generator/*)"]:::storage
 
-| Pacote                                        | Compartilhamento      | Tipo de Resolução                         | Objetivo                                                                                                                             |
-| :-------------------------------------------- | :-------------------- | :---------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| **Angular Core (`@angular/*`, `rxjs`)**       | Singleton Obrigatório | `strictVersion: true`                     | Evitar conflitos de injeção de dependências e crash de runtime. Devem rodar estritamente sob a mesma versão Major.                   |
-| **Design System (`@cookbook/design-system`)** | Singleton Flexível    | `strictVersion: false` com range `^1.0.0` | Permitir deploy independente. O navegador seleciona dinamicamente a maior versão minor/patch disponível na memória em runtime.       |
-| **Bibliotecas Utilitárias (ex: `lodash`)**    | Negociação SemVer     | Fallback Automático                       | Se as versões forem compatíveis, compartilha. Se houver quebra de Major, o orquestrador isola e carrega ambas de forma transparente. |
+        CF --> S3_SHELL
+        CF --> S3_WORKOUTS
+        CF --> S3_TIMER
+        CF --> S3_NUTRITION
+        CF --> S3_CARDS
+    end
+
+    subgraph CLIENT_BROWSER ["Navegador Web (Sessão do Usuário)"]
+        subgraph HOST_APP ["fitlab-shell (Host Orchestrator)"]
+            INIT["Bootstrap (Native Federation)"]:::host
+            ROUTER["Roteador com MfeStatusGuard"]:::host
+            CTX_SVC["MfeContextService"]:::host
+            WRAPPER["MfeWrapperComponent"]:::host
+        end
+
+        subgraph EVENT_LAYER ["Camada de Integração Agnóstica"]
+            CTX["window.mfeContext (Snapshot Síncrono)"]:::bus
+            BUS["DOM CustomEvent Bus (Assíncrono Reativo)"]:::bus
+            BRIDGE["PostMessage Bridge (Iframes)"]:::bus
+        end
+
+        subgraph REMOTES ["Micro Frontends Poliglotas"]
+            REM_ANGULAR["fitlab-mfe-workout-planner<br/>(Angular 18 Native)"]:::remote
+            REM_REACT["fitlab-mfe-interval-timer<br/>(React 18 Custom Element)"]:::remote
+            REM_VUE["fitlab-mfe-nutrition<br/>(Vue 3 Custom Element)"]:::remote
+            REM_FLASK["fitlab-mfe-card-generator<br/>(Python Flask Iframe)"]:::remote
+        end
+    end
+
+    CF -.->|Carrega Assets Estáticos| INIT
+    INIT --> ROUTER
+    ROUTER --> WRAPPER
+    CTX_SVC --> CTX
+
+    WRAPPER -->|Native Federation| REM_ANGULAR
+    WRAPPER -->|Web Component| REM_REACT
+    WRAPPER -->|Web Component| REM_VUE
+    WRAPPER -->|Sandbox Iframe| REM_FLASK
+
+    REM_ANGULAR <-->|Events| BUS
+    REM_REACT <-->|Events| BUS
+    REM_VUE <-->|Events| BUS
+    REM_FLASK <-->|postMessage| BRIDGE
+    BRIDGE <--> BUS
+    CTX -.->|Leitura Direta| REM_ANGULAR
+    CTX -.->|Leitura Direta| REM_REACT
+    CTX -.->|Leitura Direta| REM_VUE
+```
 
 ---
 
-## 5. Fluxo de Comunicação e Limites
+## 3. As 3 Estratégias de Integração de Remotos
 
-Para manter o desacoplamento de deploy e desenvolvimento de forma sustentável:
+### 3.1. Comparativo Técnico
 
-- **Importações Cruzadas (Proibido):** Um MFE Remote nunca pode importar arquivos físicos de outro MFE ou da Shell em tempo de compilação.
-- **Comunicação em Runtime:** Qualquer troca de estado necessária é realizada através de parâmetros na URL (query params) ou por meio de eventos nativos do navegador (`CustomEvent`), garantindo que os MFEs possam evoluir sem quebrar os outros.
+| Parâmetro                        | 1. Native Federation (`angular-native`)      | 2. Web Components (`web-component`)                  | 3. Iframe Controlado (`iframe`)               |
+| :------------------------------- | :------------------------------------------- | :--------------------------------------------------- | :-------------------------------------------- |
+| **Frameworks Suportados**        | Mesmo framework da Shell (Angular 18)        | Qualquer framework moderno (React, Vue, Svelte)      | Qualquer tecnologia (SSR, Python, Java, PHP)  |
+| **Mecanismo de Carregamento**    | `loadRemoteModule()` via Browser Import Maps | Script injection + `customElements.define()`         | Tag `<iframe sandbox>` com src dinâmico       |
+| **Isolamento de CSS**            | Emulated View Encapsulation / Global CSS     | Shadow DOM ou Prefixo Scoped                         | 100% Isolado por Documento                    |
+| **Performance de Inicialização** | Instantânea (reutiliza runtime do Angular)   | Rápida (download apenas do runtime do componente)    | Média (requisição de documento HTTP completo) |
+| **Comunicação com a Shell**      | Memória direta + DOM CustomEvents            | Atributos HTML, Props e DOM CustomEvents             | `window.postMessage` com validação de origem  |
+| **Projeto Validador**            | `fitlab-mfe-workout-planner`                 | `fitlab-mfe-interval-timer` & `fitlab-mfe-nutrition` | `fitlab-mfe-card-generator`                   |
+
+### 3.2. Resolução de Dependências em Tempo de Execução (Native Federation)
+
+Para remotos em Native Federation, as dependências são negociadas na memória do navegador:
+
+```javascript
+// federation.config.js (Shell & Remotes Angular)
+const {
+  withNativeFederation,
+  shareAll
+} = require('@angular-architects/native-federation/config');
+
+module.exports = withNativeFederation({
+  shared: {
+    // Singletons Estritos (Não podem coexistir múltiplas versões)
+    '@angular/core': {
+      singleton: true,
+      strictVersion: true,
+      requiredVersion: 'auto'
+    },
+    '@angular/common': {
+      singleton: true,
+      strictVersion: true,
+      requiredVersion: 'auto'
+    },
+    '@angular/router': {
+      singleton: true,
+      strictVersion: true,
+      requiredVersion: 'auto'
+    },
+    rxjs: { singleton: true, strictVersion: true, requiredVersion: 'auto' },
+
+    // Singletons Flexíveis (Deploy independente com range SemVer)
+    '@fitlab/design-system': {
+      singleton: true,
+      strictVersion: false,
+      requiredVersion: '^1.0.0'
+    },
+    '@fitlab/tooling': {
+      singleton: true,
+      strictVersion: false,
+      requiredVersion: '^1.0.0'
+    },
+
+    // Fallback SemVer automático para pacotes de terceiros
+    ...shareAll({ singleton: false, strictVersion: false })
+  }
+});
+```
 
 ---
 
-## 6. Autenticação, Permissionamento & Menu Dinâmico
+## 4. Barramento de Comunicação & Contratos de Payload
 
-A casca (Shell) opera de forma totalmente guiada a dados (Data-Driven), eliminando o conhecimento rígido sobre regras ou links de remotos.
+A comunicação não utiliza bibliotecas centralizadas de terceiros (sem NgRx global, Redux ou Pinia no window), garantindo 100% de agnosticismo a frameworks.
 
-### Controle de Acesso e Segurança Reativa
+```mermaid
+sequenceDiagram
+    autonumber
+    participant AngularApp as MFE Workouts (Angular 18)
+    participant DOM as Browser DOM (window)
+    participant ReactApp as MFE Timer (React 18)
+    participant ShellHost as Shell Orquestrador
+    participant FlaskApp as MFE Card Gen (Iframe)
 
-- **Exposição de Perfis e Permissões:** A Shell autentica o usuário, recupera os dados base (`UserProfileDTO`) e a lista de privilégios (`UserPermissionsDTO`), expondo-os de forma unificada em `window.mfeContext`.
-- **Diretiva Global (`*hasPermission`):** O pacote `@cookbook/mfe-tooling` (ou sub-pacotes correspondentes) exporta a lógica e as diretivas de acesso. Isso permite que qualquer MFE ou a Shell façam validações de UI de forma declarativa (`*hasPermission="'mfe-remote:write'"`).
+    Note over AngularApp: Praticante finaliza uma série
+    AngularApp->>DOM: window.dispatchEvent(CustomEvent 'mfe:workout:set-completed')
 
-### Roteamento Contextual e Áreas de Trabalho (Workspaces)
+    Note over ReactApp: Hook useMfeEvent escutando
+    DOM-->>ReactApp: Callback disparado com payload tipado
+    ReactApp->>ReactApp: Inicia contagem de descanso & alerta sonoro
 
-- **Workspaces por Path Parameter:** O menu lateral e as permissões de acesso são agrupados em áreas de trabalho (ex: Financeiro, RH, Operações). A área ativa é controlada via path parameter no início da URL (ex: `/:workspace-id/products`).
-- **Fallback e Área Padrão:** Na inicialização, se nenhuma área for informada (caminho `/`), a Shell redireciona automaticamente para a área padrão do usuário (`defaultWorkspace` no perfil). Caso não exista, redireciona para a primeira área para a qual o usuário tenha permissão.
-- **Reload de Contexto:** A transição de rota entre workspaces (ex: mudar de `/rh/` para `/finance/`) dispara a reinicialização lógica do estado da Shell, limpando caches e variáveis locais de forma segura para evitar vazamentos de dados entre contextos.
+    Note over AngularApp: Usuário clica em "Gerar PDF"
+    AngularApp->>DOM: publishMfeEvent('mfe:workout:export-pdf', workoutData)
+    DOM-->>ShellHost: Shell intercepta solicitação
+    ShellHost->>FlaskApp: iframe.contentWindow.postMessage({ type: 'GENERATE_PDF', data }, origin)
+    FlaskApp-->>ShellHost: window.parent.postMessage({ type: 'PDF_READY', url }, origin)
+```
 
-### O Componente Wrapper e o Header do Portal
+### 4.1. Snapshot Síncrono (`window.mfeContext`)
 
-- **MfeWrapperComponent:** Todos os remotes carregados no `ng-content` são encapsulados por um wrapper de visualização da Shell.
-- **Carga Visual Instantânea (Manifesto):** O Header do wrapper exibe o título da aplicação (campo `label` no manifesto) e renderiza botões de ações estáticas pré-configurados no JSON de forma instantânea. Enquanto o bundle do MFE é baixado em background, o wrapper exibe um esqueleto (Skeleton Loader) na área de conteúdo.
-- **Barramento de Cliques Desacoplados:** Os botões de ação do Header (ex: "Exportar") são renderizados pela Shell, mas quando clicados, disparam `CustomEvent` nativos mapeados no JSON. O remoto ativo apenas ouve esse evento localmente para executar sua ação de negócio, mantendo o desacoplamento de código.
-- **Ações e Modais Comuns (Favoritos, Info, Avaliação):** O Header integra ações comuns nativas da Shell:
-  - _Favoritar:_ Star toggle que salva o MFE na lista de acessos rápidos do usuário daquela área de trabalho específica.
-  - _Info:_ Exibição de modal com metadados do MFE (Nome, Squad Responsável, Versão).
-  - _Avaliar:_ Formulário integrado de feedback de satisfação do usuário sobre o MFE ativo.
+```typescript
+export interface MfeUser {
+  readonly id: string;
+  readonly name: string;
+  readonly email: string;
+  readonly avatarUrl?: string;
+}
 
-### Menu Lateral e Cadastro Dinâmico (Deploy Livre)
+export type MfeTheme = 'light' | 'dark';
 
-- **navigation.manifest.json:** Durante o bootstrap, a Shell busca um manifesto dinâmico central que descreve a árvore de workspaces, itens de menu e caminhos.
-- **Feature Toggles & Canary Deploy:** O manifesto introduz a chave `status` (`active` | `inactive` | `canary`) para cada MFE.
-  - `inactive`: Oculta do menu lateral e impede que a rota seja acessada.
-  - `canary`: Permite que apenas usuários com flag de beta-tester no perfil acessem e visualizem o MFE em produção.
-- **MfeStatusGuard (Guarda de Rota de Performance):** A Shell executa um guard de rota global que avalia o status do MFE no manifesto _antes_ de iniciar o carregamento dinâmico do Native Federation. Se o MFE estiver marcado como `inactive` (ou `canary` para um usuário comum), o guard bloqueia a navegação e evita requisições HTTP desnecessárias para buscar o arquivo `remoteEntry.json` do remoto.
-- **Reversão Instantânea (Rollback):** Alterações no status no manifesto central (gerenciado pelo MFE Administrativo) ativam ou desativam rotas em segundos para todos os usuários, sem necessidade de novos builds ou deploys de código.
+export interface MfeContext {
+  readonly token: string;
+  readonly permissions: readonly string[];
+  readonly workspaceId: string;
+  readonly user: Readonly<MfeUser>;
+  readonly theme: MfeTheme;
+  readonly locale: string;
+}
+```
+
+### 4.2. Contratos de Eventos Tipados (`@fitlab/tooling`)
+
+```typescript
+export const SHELL_EVENTS = {
+  THEME_CHANGED: 'mfe:shell:theme-changed',
+  USER_CHANGED: 'mfe:shell:user-changed',
+  WORKSPACE_CHANGED: 'mfe:shell:workspace-changed',
+  LOCALE_CHANGED: 'mfe:shell:locale-changed',
+  ROUTE_CHANGED: 'mfe:shell:route-changed'
+} as const;
+
+export interface ShellEventPayloadMap {
+  [SHELL_EVENTS.THEME_CHANGED]: MfeTheme;
+  [SHELL_EVENTS.USER_CHANGED]: Readonly<MfeUser>;
+  [SHELL_EVENTS.WORKSPACE_CHANGED]: string;
+  [SHELL_EVENTS.LOCALE_CHANGED]: string;
+  [SHELL_EVENTS.ROUTE_CHANGED]: {
+    readonly path: string;
+    readonly params: Readonly<Record<string, string>>;
+    readonly queryParams: Readonly<Record<string, string>>;
+  };
+}
+```
 
 ---
 
-## 7. Estrutura de Hospedagem e Pipelines (DevOps)
+## 5. Roteamento Orientado a Dados, Canary & Governança de Acesso
 
-Para otimizar os custos de infraestrutura e acelerar a esteira de entregas, adotamos um único ambiente unificado:
+### 5.1. Fluxo do Guard de Rota (`MfeStatusGuard`)
 
-### Bucket S3 Único com Isolamento Lógico
+```mermaid
+flowchart TD
+    REQ[Navegação Solicitada: /aluno/workouts] --> FETCH_MANIFEST[Lê navigation.manifest.json em memória]
+    FETCH_MANIFEST --> STATUS_CHECK{Qual o status do MFE?}
 
-- **Hospedagem Unificada:** A Shell, a biblioteca compartilhada e todos os MFEs Remotos residem sob o **mesmo Bucket S3 físico**, divididos em subpastas com o nome do respectivo MFE (ex: `s3://mfe-assets/nome-do-mfe/`).
-- **Isolamento no Deploy:** A esteira de CI/CD (GitHub Actions) usa um template comum de deploy que infere a pasta destino obrigatoriamente do **nome do repositório Git**. Como o nome do repositório é único, garante-se de forma lógica e simples que um MFE Remote nunca sobrescreva os arquivos da Shell ou de outros MFEs.
+    STATUS_CHECK -- 'inactive' --> BLOCK[<b>Bloqueio Imediato</b><br/>Exibe fallback de indisponibilidade<br/>Nenhum arquivo JS é baixado]
+
+    STATUS_CHECK -- 'canary' --> CANARY_CHECK{Usuário logado tem permissão 'beta-tester'?}
+    CANARY_CHECK -- Não --> HIDE[Redireciona para /home<br/>Oculta do menu lateral]
+    CANARY_CHECK -- Sim --> ALLOW[Permite navegação canary]
+
+    STATUS_CHECK -- 'active' --> ALLOW
+
+    ALLOW --> LOAD_MFE[<b>MfeWrapperComponent:</b><br/>Inicia carga do módulo via estratégia configurada]
+```
+
+### 5.2. Manifesto Dinâmico de Navegação (`navigation.manifest.json`)
+
+```json
+{
+  "workspaces": [
+    {
+      "id": "aluno",
+      "label": "Espaço do Aluno",
+      "items": [
+        {
+          "path": "workouts",
+          "remoteName": "mfe-workout-planner",
+          "entry": "/workouts/remoteEntry.json",
+          "type": "angular-native",
+          "label": "Treinos & Exercícios",
+          "icon": "dumbbell",
+          "status": "active"
+        },
+        {
+          "path": "timer",
+          "remoteName": "mfe-interval-timer",
+          "entry": "/timer/remoteEntry.js",
+          "type": "web-component",
+          "elementTag": "fitlab-interval-timer",
+          "label": "Cronômetro de Séries",
+          "icon": "clock",
+          "status": "canary",
+          "canaryRole": "beta-tester"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 6. Infraestrutura de Nuvem AWS (IaC com Terraform)
+
+```mermaid
+graph TD
+    classDef tf fill:#6366f1,stroke:#4338ca,stroke-width:2px,color:#fff;
+    classDef s3 fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff;
+    classDef cf fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#fff;
+
+    TF[terraform apply]:::tf --> S3_BUCKETS[Provisionamento Declarativo de Buckets]:::tf
+    TF --> CF_DIST[Configuração de Behaviors no CloudFront]:::tf
+
+    subgraph AWS_STORAGE ["S3 Multi-Bucket (Isolamento Estrito)"]
+        S3_SHELL["🪣 fitlab-mfe-shell-dev<br/>(Bloqueio de acesso público total)"]:::s3
+        S3_WORKOUTS["🪣 fitlab-mfe-workouts-dev<br/>(Bloqueio de acesso público total)"]:::s3
+        S3_TIMER["🪣 fitlab-mfe-timer-dev<br/>(Bloqueio de acesso público total)"]:::s3
+        S3_NUTRITION["🪣 fitlab-mfe-nutrition-dev<br/>(Bloqueio de acesso público total)"]:::s3
+        S3_CARDS["🪣 fitlab-mfe-card-generator-dev<br/>(Bloqueio de acesso público total)"]:::s3
+    end
+
+    CF_DIST --> CF_ROUTER["AWS CloudFront CDN"]:::cf
+    CF_ROUTER -->|Origin Access Control / OAC| S3_SHELL
+    CF_ROUTER -->|Origin Access Control / OAC| S3_WORKOUTS
+    CF_ROUTER -->|Origin Access Control / OAC| S3_TIMER
+    CF_ROUTER -->|Origin Access Control / OAC| S3_NUTRITION
+    CF_ROUTER -->|Origin Access Control / OAC| S3_CARDS
+```
+
+### Regras de OAC & Segurança em Nuvem:
+
+1. **Buckets 100% Privados:** Todo tráfego direto para os endpoints do S3 é bloqueado via `block_public_acls = true` e `block_public_policy = true`.
+2. **Autenticação de Borda:** Apenas chamadas assinadas originadas pelo CloudFront são aceitas através de uma declaração de IAM Policy com a condição:
+   ```hcl
+   condition {
+     test     = "StringEquals"
+     variable = "AWS:SourceArn"
+     values   = [aws_cloudfront_distribution.mfe_cdn.arn]
+   }
+   ```
+3. **Isolamento de Falha no Deploy:** A esteira de CI de cada MFE possui credenciais restritas via IAM para sincronizar apenas o seu bucket (`s3://fitlab-mfe-[nome]-[env]/`), impossibilitando acidentes de sobrescrita cruzada de arquivos.
